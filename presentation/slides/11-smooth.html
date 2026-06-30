@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>11 · 路径几何</title>
+<link rel="stylesheet" href="../shared.css">
+<style>
+  .geometry-board {
+    height: 100%;
+    min-height: 0;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    gap: 22px;
+  }
+
+  .chart-pair {
+    min-height: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+  }
+
+  .chart-card,
+  .reading-strip {
+    border: 1px solid var(--line-strong);
+    background: #fff;
+    box-shadow: var(--shadow);
+  }
+
+  .chart-card {
+    min-height: 0;
+    padding: 22px 24px 24px;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 18px;
+  }
+
+  .panel-head {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 24px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 12px;
+  }
+
+  .panel-title {
+    margin: 0;
+    font-family: Georgia, "Times New Roman", "SimSun", serif;
+    font-size: 40px;
+    line-height: 1.05;
+  }
+
+  .panel-sub {
+    color: var(--muted);
+    font-size: 15px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .chart-figure {
+    min-height: 0;
+    border: 1px solid var(--line);
+    background: #fff;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+  }
+
+  .chart-figure img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    min-width: 0;
+    min-height: 0;
+  }
+
+  .reading-strip {
+    padding: 18px 22px;
+    display: grid;
+    grid-template-columns: 1.05fr 1fr;
+    gap: 18px;
+  }
+
+  .reading {
+    min-height: 110px;
+    border-right: 1px solid var(--line);
+    padding-right: 18px;
+    display: grid;
+    align-content: center;
+    gap: 8px;
+  }
+
+  .reading:last-child {
+    border-right: 0;
+    padding-right: 0;
+  }
+
+  .reading .label {
+    color: var(--muted);
+    font-size: 14px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .reading .value {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 40px;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .reading .text {
+    font-size: 22px;
+    line-height: 1.34;
+  }
+
+  .reading strong {
+    color: var(--orange);
+    font-weight: 700;
+  }
+
+  .value.blue { color: var(--blue); }
+  .value.green { color: var(--green); }
+  .value.orange { color: var(--orange); }
+</style>
+</head>
+<body>
+<main class="slide">
+  <header class="head">
+    <div class="no">11</div>
+    <h1>路径几何</h1>
+    <p class="kicker">用速度分解和弯折分布观察采样路径，而不是只看最终点云。</p>
+  </header>
+  <section class="main">
+    <div class="geometry-board">
+      <div class="chart-pair">
+        <article class="chart-card">
+          <div class="panel-head">
+            <h2 class="panel-title">速度分解</h2>
+            <div class="panel-sub">径向 / 切向 / 总速度</div>
+          </div>
+          <div class="chart-figure">
+            <img src="../assets/10_radial_tangent.png" alt="Radial, tangential and speed magnitude decomposition">
+          </div>
+        </article>
+
+        <article class="chart-card">
+          <div class="panel-head">
+            <h2 class="panel-title">弯折分布</h2>
+            <div class="panel-sub">转角</div>
+          </div>
+          <div class="chart-figure">
+            <img src="../assets/10_turn_histogram.png" alt="Path turn angle histogram">
+          </div>
+        </article>
+      </div>
+
+      <aside class="reading-strip">
+        <div class="reading">
+          <div class="label">方向稳定性</div>
+          <div class="value green">2.62° <span class="value blue" style="font-size: 29px;">vs 6.47°</span></div>
+          <div class="text">Flow 的单步方向变化更小；这和 flow / rectified-flow 文献中强调的<strong>轨迹直线性</strong>相呼应。</div>
+        </div>
+        <div class="reading">
+          <div class="label">速度分解</div>
+          <div class="value orange">第 44 步</div>
+          <div class="text">径向项显示 Flow 由内收转为外扩；速度模长提供整体移动强度参照。</div>
+        </div>
+      </aside>
+    </div>
+  </section>
+  <footer class="foot">
+    <span>轨迹几何</span>
+    <span>速度分解与转角统计</span>
+  </footer>
+</main>
+</body>
+</html>
+

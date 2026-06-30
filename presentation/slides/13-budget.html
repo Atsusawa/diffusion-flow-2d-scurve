@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>13 · 采样预算</title>
+<link rel="stylesheet" href="../shared.css">
+<style>
+  .budget-board {
+    height: 100%;
+    min-height: 0;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    gap: 18px;
+  }
+
+  .budget-top {
+    min-height: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1.22fr) minmax(0, 0.78fr);
+    gap: 24px;
+  }
+
+  .viz-card,
+  .reading-card {
+    border: 1px solid var(--line-strong);
+    background: #fff;
+    box-shadow: var(--shadow);
+  }
+
+  .viz-card {
+    min-height: 0;
+    padding: 20px 22px 22px;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 14px;
+  }
+
+  .panel-head {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 18px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 11px;
+  }
+
+  .panel-title {
+    margin: 0;
+    font-family: Georgia, "Times New Roman", "SimSun", serif;
+    font-size: 38px;
+    line-height: 1.05;
+  }
+
+  .panel-sub {
+    color: var(--muted);
+    font-size: 14px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .chart-figure {
+    min-height: 0;
+    border: 1px solid var(--line);
+    background: #fff;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+  }
+
+  .chart-figure img {
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    object-fit: contain;
+  }
+
+  .budget-readings {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .reading-card {
+    min-height: 140px;
+    padding: 18px 20px;
+    display: grid;
+    align-content: center;
+    gap: 10px;
+  }
+
+  .reading-card .label {
+    color: var(--muted);
+    font-size: 14px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .reading-card .value {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 39px;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .reading-card .text {
+    font-size: 22px;
+    line-height: 1.34;
+  }
+
+  .reading-card strong {
+    color: var(--orange);
+    font-weight: 700;
+  }
+
+  .value.blue { color: var(--blue); }
+  .value.green { color: var(--green); }
+  .value.orange { color: var(--orange); }
+</style>
+</head>
+<body>
+<main class="slide">
+  <header class="head">
+    <div class="no">13</div>
+    <h1>采样预算</h1>
+    <p class="kicker">固定训练权重，只改变采样阶段的网络前向次数，观察误差如何响应。</p>
+  </header>
+  <section class="main">
+    <div class="budget-board">
+      <div class="budget-top">
+        <article class="viz-card">
+          <div class="panel-head">
+            <h2 class="panel-title">误差曲线</h2>
+            <div class="panel-sub">固定权重 / 固定投影方向</div>
+          </div>
+          <div class="chart-figure">
+            <img src="../assets/11_nfe_comparison_curve_slide.png" alt="NFE sensitivity curves for diffusion and flow matching">
+          </div>
+        </article>
+
+        <article class="viz-card">
+          <div class="panel-head">
+            <h2 class="panel-title">代表快照</h2>
+            <div class="panel-sub">NFE 3 / 10 / 80</div>
+          </div>
+          <div class="chart-figure">
+            <img src="../assets/11_nfe_comparison_snapshots_focus_slide.png" alt="Final samples under representative NFE values">
+          </div>
+        </article>
+      </div>
+
+      <aside class="budget-readings">
+        <div class="reading-card">
+          <div class="label">分布距离 SWD</div>
+          <div class="value green">0.233→0.066</div>
+          <div class="text">Flow 从低预算开始持续改善；Diffusion 从 <strong>0.422→0.232</strong>，10 步后基本平台化。</div>
+        </div>
+        <div class="reading-card">
+          <div class="label">局部贴近</div>
+          <div class="value blue">0.046</div>
+          <div class="text">Diffusion 在 10/20 NFE 的 p90 最近邻距离已较低；局部贴近与全局分布距离并不等价。</div>
+        </div>
+      </aside>
+    </div>
+  </section>
+  <footer class="foot">
+    <span>采样预算敏感性</span>
+    <span>固定模型权重、目标样本与评估随机种子</span>
+  </footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>01 · 噪声成形</title>
+<link rel="stylesheet" href="../vendor/katex/katex.min.css">
+<link rel="stylesheet" href="../shared.css">
+</head>
+<body>
+<main class="slide cover">
+  <section class="main">
+    <div class="cover-title">
+      <div class="label-row">
+        <span class="tag dark">Diffusion</span>
+        <span class="tag dark">Flow Matching</span>
+        <span class="tag orange">2D S-curve</span>
+      </div>
+      <h1>噪声<br>成形</h1>
+      <p class="subtitle">从二维高斯基分布出发，观察样本如何在时间动力学中形成 S 形数据分布。</p>
+      <div class="formula large">
+        <span class="tex" data-tex="z_0\sim N(0,I)\ \longrightarrow\ z_t\ \longrightarrow\ z_1\sim p_{\mathrm{data}}"></span>
+      </div>
+    </div>
+    <figure class="cover-visual figure">
+      <div class="image-box">
+        <img src="../assets/transport_overview.png" alt="Gaussian to S curve transport overview">
+      </div>
+        <figcaption></figcaption>
+    </figure>
+  </section>
+  <footer class="foot">
+    <span>二维生成动力学</span>
+    <span>高斯基分布 → S 形数据分布</span>
+  </footer>
+</main>
+<script src="../vendor/katex/katex.min.js"></script>
+<script src="../vendor/katex/render-tex.js"></script>
+</body>
+</html>

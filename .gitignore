@@ -1,0 +1,33 @@
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Experiment outputs; regenerate with scurve_diffusion_flow.py
+outputs/
+outputs_*/
+
+# Local browser / screenshot artifacts
+screenshots/
+browser-profile*/
+browser-profiles/
+
+# Node dependencies used only for local tooling
+node_modules/
+package.json
+package-lock.json
+npm-debug.log*
+
+# Local slide capture helpers; final slides do not depend on these
+scripts/capture-slides*.js
+
+# Private presentation notes and speaker scripts
+presentation/**/notes/
+presentation/**/speaker*.md
+presentation/**/*speaker*.md
+presentation/**/script*.md
+presentation/**/*script*.md
+presentation/**/讲稿*.md
+presentation/**/*讲稿*.md
+speaker*.md
+*speaker*.md
+*讲稿*.md

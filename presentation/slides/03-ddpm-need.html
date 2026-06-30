@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>03 · 变分入口</title>
+<link rel="stylesheet" href="../vendor/katex/katex.min.css">
+<link rel="stylesheet" href="../shared.css">
+<style>
+  .entry-board {
+    height: 100%;
+    display: grid;
+    grid-template-columns: minmax(0, 0.78fr) minmax(0, 1.22fr);
+    gap: 34px;
+    min-height: 0;
+  }
+
+  .entry-left {
+    border: 1px solid var(--line-strong);
+    background: #fff;
+    box-shadow: var(--shadow);
+    padding: 34px;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 24px;
+  }
+
+  .entry-title {
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 18px;
+  }
+
+  .entry-title h2 {
+    margin: 0;
+    font-family: Georgia, "Times New Roman", "SimSun", serif;
+    font-size: 43px;
+    line-height: 1.06;
+  }
+
+  .entry-title p {
+    margin: 10px 0 0;
+    color: var(--muted);
+    font-size: 22px;
+    line-height: 1.38;
+  }
+
+  .elbo-box {
+    align-self: center;
+    display: grid;
+    gap: 28px;
+  }
+
+  .elbo-box .formula {
+    white-space: normal;
+    font-size: 31px;
+    line-height: 1.42;
+  }
+
+  .elbo-formula {
+    display: grid;
+    gap: 6px;
+  }
+
+  .elbo-formula > .tex {
+    display: block;
+  }
+
+  .elbo-terms {
+    display: grid;
+    gap: 12px;
+    font-size: 23px;
+    line-height: 1.42;
+  }
+
+  .elbo-terms div {
+    border-top: 1px solid var(--line);
+    padding-top: 12px;
+  }
+
+  .entry-right {
+    border: 1px solid var(--line-strong);
+    background: #fff;
+    box-shadow: var(--shadow);
+    padding: 32px 34px 28px;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 20px;
+    min-height: 0;
+  }
+
+  .entry-right-head {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 24px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 16px;
+  }
+
+  .entry-right-head h2 {
+    margin: 0;
+    font-family: Georgia, "Times New Roman", "SimSun", serif;
+    font-size: 43px;
+    line-height: 1.06;
+  }
+
+  .entry-right-head span {
+    color: var(--muted);
+    font-size: 15px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .chain-area {
+    display: grid;
+    align-content: space-evenly;
+    gap: 18px;
+    min-height: 0;
+  }
+
+  .formula-band {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 18px;
+  }
+
+  .formula-band .formula {
+    font-size: 29px;
+    white-space: normal;
+  }
+
+  .chain-svg {
+    border: 1px solid var(--line);
+    background: #fffdf9;
+    height: 300px;
+    display: grid;
+    place-items: center;
+  }
+
+  .kl-line {
+    border-top: 1px solid var(--line);
+    padding-top: 18px;
+  }
+
+  .kl-line .formula {
+    font-size: 30px;
+    white-space: normal;
+  }
+
+</style>
+</head>
+<body>
+<main class="slide">
+  <header class="head">
+    <div class="no">03</div>
+    <h1>变分入口</h1>
+    <p class="kicker">VAE 只作为变分下界入口；重点是 DDPM 如何把局部反向分布变成可学习目标。</p>
+  </header>
+  <section class="main">
+    <div class="entry-board">
+      <article class="entry-left">
+        <div class="entry-title">
+          <h2>从 ELBO 进入</h2>
+        </div>
+        <div class="elbo-box">
+          <div class="formula elbo-formula">
+            <span class="tex" data-tex="\log p_{\theta}(x_0) \geq \mathbb{E}_{q}[\log p_{\theta}(x_0|z)]"></span>
+            <span class="tex" data-tex="- \mathrm{KL}(q_{\phi}(z|x_0)\,\|\,p(z))"></span>
+          </div>
+          <div class="elbo-terms">
+            <div><span class="tag blue">重构项</span> 让潜变量能够解释观测数据。</div>
+            <div><span class="tag orange">正则项</span> 让后验接近可采样的简单先验。</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="entry-right">
+        <div class="entry-right-head">
+          <h2>链式改写</h2>
+          <span>潜变量链</span>
+        </div>
+        <div class="chain-area">
+          <div class="formula-band">
+            <div class="formula"><span class="tex" data-tex="q(x_{1:T}|x_0)=\prod_{t=1}^{T}q(x_t|x_{t-1})"></span></div>
+            <div class="formula"><span class="tex" data-tex="p_{\theta}(x_{0:T})=p(x_T)\prod_{t=1}^{T}p_{\theta}(x_{t-1}|x_t)"></span></div>
+          </div>
+          <div class="chain-svg">
+            <svg viewBox="0 0 1000 270" width="1000" height="270" aria-hidden="true">
+              <g font-family="Georgia, 'Times New Roman', serif" font-size="33" fill="#17202f" text-anchor="middle">
+                <circle cx="105" cy="93" r="39" fill="#fff" stroke="#17202f" stroke-width="2"></circle>
+                <circle cx="305" cy="93" r="39" fill="#e7eef8" stroke="#17202f" stroke-width="2"></circle>
+                <circle cx="505" cy="93" r="39" fill="#c8d8f0" stroke="#17202f" stroke-width="2"></circle>
+                <circle cx="705" cy="93" r="39" fill="#9ebade" stroke="#17202f" stroke-width="2"></circle>
+                <circle cx="895" cy="93" r="39" fill="#7e9ece" stroke="#17202f" stroke-width="2"></circle>
+                <text x="105" y="105">x<tspan baseline-shift="sub" font-size="20">0</tspan></text>
+                <text x="305" y="105">x<tspan baseline-shift="sub" font-size="20">1</tspan></text>
+                <text x="505" y="105">x<tspan baseline-shift="sub" font-size="20">t−1</tspan></text>
+                <text x="705" y="105">x<tspan baseline-shift="sub" font-size="20">t</tspan></text>
+                <text x="895" y="105">x<tspan baseline-shift="sub" font-size="20">T</tspan></text>
+              </g>
+              <defs>
+                <marker id="blueArrow" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="8" markerHeight="8" orient="auto">
+                  <path d="M1 1 L11 6 L1 11 Z" fill="#2f66b3"></path>
+                </marker>
+                <marker id="orangeArrow" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="8" markerHeight="8" orient="auto">
+                  <path d="M1 1 L11 6 L1 11 Z" fill="#dc7f2c"></path>
+                </marker>
+              </defs>
+              <g stroke="#2f66b3" stroke-width="4.2" stroke-linecap="round" fill="none" marker-end="url(#blueArrow)">
+                <line x1="146" y1="93" x2="252" y2="93"></line>
+                <line x1="346" y1="93" x2="452" y2="93"></line>
+                <line x1="546" y1="93" x2="652" y2="93"></line>
+                <line x1="746" y1="93" x2="842" y2="93"></line>
+              </g>
+              <g stroke="#dc7f2c" stroke-width="4.2" stroke-linecap="round" fill="none" marker-end="url(#orangeArrow)">
+                <line x1="854" y1="178" x2="748" y2="178"></line>
+                <line x1="654" y1="178" x2="548" y2="178"></line>
+                <line x1="454" y1="178" x2="348" y2="178"></line>
+                <line x1="254" y1="178" x2="148" y2="178"></line>
+              </g>
+              <g font-family="Bahnschrift, 'Segoe UI', sans-serif" font-size="22" fill="#667085" text-anchor="middle">
+                <text x="500" y="43">固定前向过程 q</text>
+                <text x="500" y="224">学习反向过程 p<tspan baseline-shift="sub" font-size="14">θ</tspan></text>
+              </g>
+            </svg>
+          </div>
+          <div class="kl-line">
+            <div class="formula"><span class="tex" data-tex="\mathrm{KL}\!\left(q(x_{t-1}|x_t,x_0)\,\|\,p_{\theta}(x_{t-1}|x_t)\right)"></span></div>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+  <footer class="foot">
+    <span>以 ELBO 作为入口</span>
+    <span>局部反向 KL 是需要化简的对象</span>
+  </footer>
+</main>
+<script src="../vendor/katex/katex.min.js"></script>
+<script src="../vendor/katex/render-tex.js"></script>
+</body>
+</html>

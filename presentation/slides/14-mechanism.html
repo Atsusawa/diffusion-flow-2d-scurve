@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>14 · 总结比较</title>
+<link rel="stylesheet" href="../shared.css">
+<style>
+  .summary-board {
+    height: 100%;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: 28px;
+  }
+
+  .evidence-panel,
+  .tradeoff-panel,
+  .synthesis-panel {
+    border: 1px solid var(--line-strong);
+    background: #fff;
+    box-shadow: var(--shadow);
+  }
+
+  .evidence-panel {
+    min-height: 0;
+    padding: 34px 38px;
+    display: grid;
+    grid-template-rows: auto auto minmax(0, 1fr);
+    gap: 24px;
+  }
+
+  .panel-label {
+    color: var(--muted);
+    font-size: 14px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .main-claim {
+    margin: 0;
+    font-family: Georgia, "Times New Roman", "SimSun", serif;
+    font-size: 56px;
+    line-height: 1.08;
+    font-weight: 700;
+  }
+
+  .main-claim strong {
+    color: var(--green);
+    font-weight: 700;
+  }
+
+  .evidence-list {
+    display: grid;
+    align-content: start;
+    gap: 16px;
+  }
+
+  .evidence-row {
+    display: grid;
+    grid-template-columns: 118px 1fr;
+    gap: 18px;
+    align-items: baseline;
+    padding: 17px 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .evidence-row .value {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 42px;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .evidence-row .value.green { color: var(--green); }
+  .evidence-row .value.blue { color: var(--blue); }
+  .evidence-row .value.orange { color: var(--orange); }
+
+  .evidence-row .text {
+    font-size: 22px;
+    line-height: 1.38;
+  }
+
+  .right-stack {
+    min-height: 0;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    gap: 18px;
+  }
+
+  .tradeoff-panel {
+    min-height: 0;
+    padding: 30px 32px;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 20px;
+  }
+
+  .tradeoff-head {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 24px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 16px;
+  }
+
+  .tradeoff-title {
+    margin: 0;
+    font-family: Georgia, "Times New Roman", "SimSun", serif;
+    font-size: 42px;
+    line-height: 1.05;
+  }
+
+  .tradeoff-grid {
+    min-height: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .tradeoff-card {
+    min-height: 0;
+    border: 1px solid var(--line);
+    background: #fffdf9;
+    padding: 22px 19px;
+    display: grid;
+    grid-template-rows: auto auto 1fr;
+    gap: 14px;
+  }
+
+  .tradeoff-card .tag {
+    width: fit-content;
+  }
+
+  .tradeoff-card h3 {
+    margin: 0;
+    font-family: Georgia, "Times New Roman", "SimSun", serif;
+    font-size: 31px;
+    line-height: 1.08;
+    font-weight: 700;
+  }
+
+  .tradeoff-card .text {
+    display: grid;
+    align-content: start;
+    gap: 12px;
+    font-size: 20px;
+    line-height: 1.38;
+  }
+
+  .tradeoff-card .text div {
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(216, 209, 199, 0.75);
+  }
+
+  .tradeoff-card .text div:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+
+  .synthesis-panel {
+    padding: 20px 24px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 22px;
+    align-items: center;
+  }
+
+  .synthesis-title {
+    font-family: Georgia, "Times New Roman", "SimSun", serif;
+    font-size: 34px;
+    line-height: 1.05;
+    white-space: nowrap;
+  }
+
+  .synthesis-text {
+    font-size: 23px;
+    line-height: 1.42;
+  }
+
+  .green { color: var(--green); }
+  .blue { color: var(--blue); }
+  .orange { color: var(--orange); }
+</style>
+</head>
+<body>
+<main class="slide">
+  <header class="head">
+    <div class="no">14</div>
+    <h1>总结比较</h1>
+    <p class="kicker">从二维实验现象回到概率路径、预测目标、采样器与任务条件。</p>
+  </header>
+  <section class="main">
+    <div class="summary-board">
+      <aside class="evidence-panel">
+        <div class="panel-label">实验证据</div>
+        <h2 class="main-claim">当前设置下<br><strong>Flow Matching</strong><br>具有更高采样效率</h2>
+        <div class="evidence-list">
+          <div class="evidence-row">
+            <div class="value green">0.066</div>
+            <div class="text">80 NFE 下 Flow Matching 的 SWD；在二维 S-curve 任务中更接近目标分布。</div>
+          </div>
+          <div class="evidence-row">
+            <div class="value blue">0.232</div>
+            <div class="text">同一设置下 Diffusion 的 SWD；最终形状可恢复，但样本带更散。</div>
+          </div>
+          <div class="evidence-row">
+            <div class="value orange">2.62°</div>
+            <div class="text">Flow 的平均转角更小，说明当前 ODE 采样轨迹更平滑、更少弯折。</div>
+          </div>
+        </div>
+      </aside>
+
+      <div class="right-stack">
+        <article class="tradeoff-panel">
+          <div class="tradeoff-head">
+            <h2 class="tradeoff-title">综合认识</h2>
+            <div class="panel-label">观察 · 条件 · 关系</div>
+          </div>
+
+          <div class="tradeoff-grid">
+            <section class="tradeoff-card">
+              <div class="tag green">Flow Matching</div>
+              <h3>路径与积分</h3>
+              <div class="text">
+                <div>直接回归速度场，并在采样阶段求解 ODE。</div>
+                <div>在当前二维任务中，较平滑的概率路径对应更小的有限步积分误差。</div>
+              </div>
+            </section>
+
+            <section class="tradeoff-card">
+              <div class="tag blue">Diffusion</div>
+              <h3>后验采样</h3>
+              <div class="text">
+                <div>在观测不完备、解不唯一的逆问题中，后验分布不能简单压缩为单一点估计。</div>
+                <div>图像补全、超分辨率、去模糊、医学重建和相位恢复都需要表达不确定性。</div>
+              </div>
+            </section>
+
+            <section class="tradeoff-card">
+              <div class="tag orange">共同视角</div>
+              <h3>统一视角</h3>
+              <div class="text">
+                <div>DDIM 可以把 diffusion 采样写成确定性更新。</div>
+                <div>在概率路径视角下，二者的差异主要体现为目标参数化、时间表和采样器选择。</div>
+              </div>
+            </section>
+          </div>
+        </article>
+
+        <aside class="synthesis-panel">
+          <div class="synthesis-title">结论</div>
+          <div class="synthesis-text">在二维无条件生成和当前采样预算下，Flow Matching 表现出更高的数值效率；而在需要后验不确定性表达的任务中，Diffusion / SDE 视角仍然具有方法价值。</div>
+        </aside>
+      </div>
+    </div>
+  </section>
+  <footer class="foot">
+    <span>概率路径 · 预测目标 · 采样器 · 任务条件</span>
+    <span>DDIM、ODE 与 SDE 视角提供统一理解</span>
+  </footer>
+</main>
+</body>
+</html>

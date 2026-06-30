@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>08 · 实验设定</title>
+<link rel="stylesheet" href="../vendor/katex/katex.min.css">
+<link rel="stylesheet" href="../shared.css">
+<style>
+  .protocol-board {
+    height: 100%;
+    border: 1px solid var(--line-strong);
+    background: #fff;
+    box-shadow: var(--shadow);
+    padding: 32px 34px 30px;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 22px;
+    min-height: 0;
+  }
+
+  .protocol-head {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 30px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 16px;
+  }
+
+  .protocol-head h2 {
+    margin: 0;
+    font-family: Georgia, "Times New Roman", "SimSun", serif;
+    font-size: 44px;
+    line-height: 1.05;
+  }
+
+  .protocol-head span {
+    color: var(--muted);
+    font-size: 15px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .protocol-main {
+    min-height: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 0.88fr) 54px minmax(0, 0.86fr) 54px minmax(0, 1.02fr);
+    gap: 0;
+    align-items: stretch;
+  }
+
+  .protocol-section {
+    min-height: 0;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 16px;
+  }
+
+  .section-label {
+    color: var(--muted);
+    font-size: 15px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .task-card,
+  .control-card,
+  .difference-card {
+    min-height: 0;
+    border: 1px solid var(--line);
+    background: #fffdf9;
+    padding: 24px;
+  }
+
+  .task-card {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    gap: 20px;
+  }
+
+  .task-title {
+    font-family: Georgia, "Times New Roman", "SimSun", serif;
+    font-size: 40px;
+    line-height: 1.08;
+  }
+
+  .task-svg {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    border: 1px solid var(--line);
+    background: #fff;
+  }
+
+  .task-note {
+    color: var(--muted);
+    font-size: 22px;
+    line-height: 1.38;
+  }
+
+  .connector {
+    display: grid;
+    place-items: center;
+  }
+
+  .connector svg {
+    width: 48px;
+    height: 360px;
+    overflow: visible;
+  }
+
+  .control-card {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 16px;
+  }
+
+  .control-title {
+    font-family: Georgia, "Times New Roman", "SimSun", serif;
+    font-size: 40px;
+    line-height: 1.08;
+  }
+
+  .control-list {
+    display: grid;
+    align-content: stretch;
+    gap: 0;
+  }
+
+  .control-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 18px;
+    align-items: baseline;
+    border-top: 1px solid var(--line);
+    padding: 13px 0;
+  }
+
+  .control-row:first-child {
+    border-top: 0;
+    padding-top: 0;
+  }
+
+  .control-row .name {
+    color: var(--muted);
+    font-size: 15px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .control-row .value {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 30px;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .difference-card {
+    display: grid;
+    grid-template-rows: auto auto minmax(0, 1fr);
+    gap: 16px;
+  }
+
+  .difference-title {
+    font-family: Georgia, "Times New Roman", "SimSun", serif;
+    font-size: 40px;
+    line-height: 1.08;
+  }
+
+  .method-pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .method-card {
+    border: 1px solid var(--line);
+    background: #fff;
+    padding: 16px;
+    display: grid;
+    gap: 11px;
+    min-width: 0;
+  }
+
+  .method-card .tag {
+    width: fit-content;
+  }
+
+  .method-card .formula {
+    font-size: 26px;
+    padding: 14px 12px;
+    white-space: normal;
+  }
+
+  .method-card .text {
+    font-size: 20px;
+    line-height: 1.32;
+  }
+
+  .observe-grid {
+    align-self: end;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .observe-card {
+    min-height: 98px;
+    border: 1px solid var(--line);
+    background: rgba(247,243,236,0.45);
+    padding: 14px 16px;
+    display: grid;
+    align-content: center;
+    gap: 8px;
+  }
+
+  .observe-card .label {
+    color: var(--muted);
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .observe-card .text {
+    font-size: 22px;
+    line-height: 1.24;
+  }
+</style>
+</head>
+<body>
+<main class="slide">
+  <header class="head">
+    <div class="no">08</div>
+    <h1>实验设定</h1>
+    <p class="kicker">固定任务、能力与采样预算，只让建模对象和采样动力学暴露差异。</p>
+  </header>
+  <section class="main">
+    <article class="protocol-board">
+      <div class="protocol-head">
+        <h2>先固定比较条件，再观察模型行为</h2>
+        <span>同一任务 · 同一容量 · 同一 NFE</span>
+      </div>
+
+      <div class="protocol-main">
+        <section class="protocol-section">
+          <div class="section-label">共同任务</div>
+          <div class="task-card">
+            <div class="task-title">二维高斯<br>到 S 形分布</div>
+            <svg class="task-svg" viewBox="0 0 520 430" aria-hidden="true">
+              <defs>
+                <marker id="taskArrow" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="9" markerHeight="9" orient="auto">
+                  <path d="M1 1 L11 6 L1 11 Z" fill="#aeb5bf"></path>
+                </marker>
+              </defs>
+              <rect x="32" y="38" width="456" height="330" fill="#fff" stroke="#d8d1c7" stroke-width="2"></rect>
+              <g opacity="0.8" fill="#2f66b3">
+                <circle cx="110" cy="183" r="5"></circle><circle cx="131" cy="160" r="4"></circle>
+                <circle cx="147" cy="202" r="5"></circle><circle cx="168" cy="175" r="4"></circle>
+                <circle cx="189" cy="214" r="5"></circle><circle cx="202" cy="154" r="4"></circle>
+                <circle cx="129" cy="232" r="4"></circle><circle cx="165" cy="246" r="4"></circle>
+                <circle cx="211" cy="190" r="4"></circle><circle cx="180" cy="127" r="4"></circle>
+                <circle cx="100" cy="224" r="4"></circle><circle cx="218" cy="236" r="4"></circle>
+              </g>
+              <path d="M238 200 C273 200, 290 200, 323 200" stroke="#aeb5bf" stroke-width="4" fill="none" marker-end="url(#taskArrow)"></path>
+              <g fill="#dc7f2c" opacity="0.88">
+                <circle cx="388" cy="102" r="4"></circle><circle cx="414" cy="116" r="4"></circle>
+                <circle cx="429" cy="139" r="4"></circle><circle cx="421" cy="162" r="4"></circle>
+                <circle cx="397" cy="179" r="4"></circle><circle cx="366" cy="194" r="4"></circle>
+                <circle cx="342" cy="218" r="4"></circle><circle cx="347" cy="246" r="4"></circle>
+                <circle cx="376" cy="263" r="4"></circle><circle cx="411" cy="276" r="4"></circle>
+                <circle cx="428" cy="302" r="4"></circle><circle cx="411" cy="326" r="4"></circle>
+                <circle cx="376" cy="338" r="4"></circle>
+              </g>
+              <g font-family="Bahnschrift, 'Segoe UI', sans-serif" font-size="20" fill="#667085" text-anchor="middle">
+                <text x="160" y="395">p<tspan baseline-shift="sub" font-size="13">0</tspan> = N(0,I)</text>
+                <text x="389" y="395">p<tspan baseline-shift="sub" font-size="13">data</tspan> = S-curve</text>
+              </g>
+            </svg>
+            <div class="task-note">目标几何相同；后续只比较两种学习目标如何产生采样过程。</div>
+          </div>
+        </section>
+
+        <div class="connector" aria-hidden="true">
+          <svg viewBox="0 0 48 360">
+            <defs>
+              <marker id="arrowA08" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="8" markerHeight="8" orient="auto">
+                <path d="M1 1 L11 6 L1 11 Z" fill="#aeb5bf"></path>
+              </marker>
+            </defs>
+            <path d="M6 180 H40" stroke="#aeb5bf" stroke-width="3" fill="none" marker-end="url(#arrowA08)"></path>
+          </svg>
+        </div>
+
+        <section class="protocol-section">
+          <div class="section-label">控制变量</div>
+          <div class="control-card">
+            <div class="control-title">控制变量</div>
+            <div class="control-list">
+              <div class="control-row"><div class="name">网络</div><div class="value">MLP 64×3</div></div>
+              <div class="control-row"><div class="name">训练步数</div><div class="value">2200</div></div>
+              <div class="control-row"><div class="name">批量大小</div><div class="value">512</div></div>
+              <div class="control-row"><div class="name">采样步数</div><div class="value">80</div></div>
+              <div class="control-row"><div class="name">样本数</div><div class="value">2500</div></div>
+            </div>
+          </div>
+        </section>
+
+        <div class="connector" aria-hidden="true">
+          <svg viewBox="0 0 48 360">
+            <defs>
+              <marker id="arrowB08" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="8" markerHeight="8" orient="auto">
+                <path d="M1 1 L11 6 L1 11 Z" fill="#aeb5bf"></path>
+              </marker>
+            </defs>
+            <path d="M6 180 H40" stroke="#aeb5bf" stroke-width="3" fill="none" marker-end="url(#arrowB08)"></path>
+          </svg>
+        </div>
+
+        <section class="protocol-section">
+          <div class="section-label">保留差异与观察量</div>
+          <div class="difference-card">
+            <div class="difference-title">只保留建模差异</div>
+            <div class="method-pair">
+              <div class="method-card">
+                <div class="tag blue">Diffusion</div>
+                <div class="formula"><span class="tex" data-tex="\epsilon_{\theta}(x_t,t)"></span></div>
+                <div class="text">通过噪声预测参数化反向去噪更新。</div>
+              </div>
+              <div class="method-card">
+                <div class="tag green">Flow Matching</div>
+                <div class="formula"><span class="tex" data-tex="v_{\theta}(z_t,t)"></span></div>
+                <div class="text">通过速度场积分得到生成轨迹。</div>
+              </div>
+            </div>
+            <div class="observe-grid">
+              <div class="observe-card">
+                <div class="label">终态</div>
+                <div class="text">最终分布</div>
+              </div>
+              <div class="observe-card">
+                <div class="label">轨迹</div>
+                <div class="text">同点轨迹</div>
+              </div>
+              <div class="observe-card">
+                <div class="label">速度场</div>
+                <div class="text">局部向量场</div>
+              </div>
+              <div class="observe-card">
+                <div class="label">平滑性</div>
+                <div class="text">转角统计</div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </article>
+  </section>
+  <footer class="foot">
+    <span>先固定比较条件，再解释可见差异</span>
+    <span>后续观察均沿用这一实验设定</span>
+  </footer>
+</main>
+<script src="../vendor/katex/katex.min.js"></script>
+<script src="../vendor/katex/render-tex.js"></script>
+</body>
+</html>

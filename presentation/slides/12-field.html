@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>12 · 早期动力</title>
+<link rel="stylesheet" href="../shared.css">
+<style>
+  .early-board {
+    height: 100%;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 0.5fr);
+    gap: 28px;
+  }
+
+  .focus-card,
+  .metrics-card,
+  .mechanism-card {
+    border: 1px solid var(--line-strong);
+    background: #fff;
+    box-shadow: var(--shadow);
+  }
+
+  .focus-card {
+    min-height: 0;
+    padding: 21px;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 15px;
+  }
+
+  .panel-head {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 20px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 12px;
+  }
+
+  .panel-title {
+    margin: 0;
+    font-family: Georgia, "Times New Roman", "SimSun", serif;
+    font-size: 38px;
+    line-height: 1.05;
+  }
+
+  .panel-sub {
+    color: var(--muted);
+    font-size: 14px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .evidence-figure {
+    min-height: 0;
+    display: grid;
+    align-items: start;
+  }
+
+  .displacement-pair {
+    min-height: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    align-self: start;
+  }
+
+  .model-panel {
+    min-height: 0;
+    border: 1px solid var(--line);
+    background: #fff;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    aspect-ratio: 1.0926 / 1;
+  }
+
+  .model-label {
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .model-label .name {
+    font-size: 24px;
+    font-weight: 700;
+  }
+
+  .model-label .desc {
+    color: var(--muted);
+    font-size: 15px;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .crop-panel {
+    min-height: 0;
+    background: #fff;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+  }
+
+  .crop-panel img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .side-stack {
+    min-height: 0;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 18px;
+  }
+
+  .metrics-card {
+    padding: 22px;
+    display: grid;
+    gap: 16px;
+  }
+
+  .metric-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .metric {
+    border: 1px solid var(--line);
+    background: #fffdf9;
+    padding: 16px 15px;
+    min-height: 96px;
+    display: grid;
+    align-content: center;
+    gap: 8px;
+  }
+
+  .metric .label {
+    color: var(--muted);
+    font-size: 13px;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+  }
+
+  .metric .value {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 35px;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .metric.diffusion .value { color: var(--blue); }
+  .metric.flow .value { color: var(--green); }
+
+  .metric-note {
+    color: var(--muted);
+    font-size: 19px;
+    line-height: 1.42;
+  }
+
+  .metric-note strong {
+    color: var(--orange);
+    font-weight: 700;
+  }
+
+  .mechanism-card {
+    min-height: 0;
+    padding: 20px 24px;
+    display: grid;
+    align-content: center;
+    gap: 14px;
+  }
+
+  .mechanism-title {
+    margin: 0;
+    font-family: Georgia, "Times New Roman", "SimSun", serif;
+    font-size: 34px;
+    line-height: 1.05;
+  }
+
+  .reason-line {
+    border-top: 1px solid var(--line);
+    padding-top: 12px;
+    display: grid;
+    gap: 6px;
+  }
+
+  .reason-line .label {
+    color: var(--muted);
+    font-size: 14px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .reason-line .text {
+    font-size: 21px;
+    line-height: 1.34;
+  }
+
+  .reason-line strong {
+    color: var(--orange);
+    font-weight: 700;
+  }
+</style>
+</head>
+<body>
+<main class="slide">
+  <header class="head">
+    <div class="no">12</div>
+    <h1>早期动力</h1>
+    <p class="kicker">观察采样开始阶段的整体位移方向，而不是只看若干条轨迹。</p>
+  </header>
+  <section class="main">
+    <div class="early-board">
+      <article class="focus-card">
+        <div class="panel-head">
+          <h2 class="panel-title">位移场</h2>
+          <div class="panel-sub">第 0→8 步 / 相同初值</div>
+        </div>
+        <div class="evidence-figure">
+          <div class="displacement-pair">
+            <div class="model-panel">
+              <div class="model-label">
+                <div class="name">Diffusion / DDIM</div>
+                <div class="desc">局部方向混合</div>
+              </div>
+              <div class="crop-panel">
+                <img src="../assets/08_early_diffusion_field_equal.png" alt="Diffusion early displacement field">
+              </div>
+            </div>
+            <div class="model-panel">
+              <div class="model-label">
+                <div class="name">Flow Matching / ODE</div>
+                <div class="desc">整体内收输运</div>
+              </div>
+              <div class="crop-panel">
+                <img src="../assets/08_early_flow_field_equal.png" alt="Flow matching early displacement field">
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <div class="side-stack">
+        <aside class="metrics-card">
+          <div class="panel-head">
+            <h2 class="panel-title">径向趋势</h2>
+            <div class="panel-sub">第 8 步</div>
+          </div>
+          <div class="metric-grid">
+            <div class="metric diffusion">
+              <div class="label">Diffusion 半径变化</div>
+              <div class="value">+0.029</div>
+            </div>
+            <div class="metric flow">
+              <div class="label">Flow 半径变化</div>
+              <div class="value">−0.124</div>
+            </div>
+            <div class="metric diffusion">
+              <div class="label">Diffusion 内收比例</div>
+              <div class="value">38.9%</div>
+            </div>
+            <div class="metric flow">
+              <div class="label">Flow 内收比例</div>
+              <div class="value">99.7%</div>
+            </div>
+          </div>
+          <div class="metric-note">这个观察把“Flow Matching 初期整体向内”从动态图印象变成了<strong>径向位移统计</strong>。</div>
+        </aside>
+
+        <article class="mechanism-card">
+          <h2 class="mechanism-title">为什么会这样？</h2>
+          <div class="reason-line">
+            <div class="label">Flow Matching</div>
+            <div class="text">CondOT 路径监督的是 <strong>x₁−z₀</strong>。在 t≈0 时，速度场近似把高斯样本推向数据分布的中心和支撑集。</div>
+          </div>
+          <div class="reason-line">
+            <div class="label">Diffusion</div>
+            <div class="text">高噪声端的反向更新来自噪声/score 估计；它先恢复局部数据方向，不必表现为整体半径收缩。</div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+  <footer class="foot">
+    <span>早期动力反映目标参数化差异</span>
+    <span>从动态图印象回到径向统计</span>
+  </footer>
+</main>
+</body>
+</html>
+

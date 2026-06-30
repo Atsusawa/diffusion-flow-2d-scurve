@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>10 · 动态过程</title>
+<link rel="stylesheet" href="../shared.css">
+<style>
+  .process-board {
+    height: 100%;
+    min-height: 0;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr);
+  }
+
+  .process-pair {
+    height: 100%;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 28px;
+  }
+
+  .process-card {
+    min-height: 0;
+    border: 1px solid var(--line-strong);
+    background: #fff;
+    box-shadow: var(--shadow);
+    padding: 22px 22px 20px;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    gap: 14px;
+  }
+
+  .process-head {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 18px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 13px;
+  }
+
+  .process-method {
+    font-family: Georgia, "Times New Roman", "SimSun", serif;
+    font-size: 42px;
+    line-height: 1;
+  }
+
+  .process-card.diffusion .process-method { color: var(--blue); }
+  .process-card.flow .process-method { color: var(--green); }
+
+  .process-equation {
+    color: var(--muted);
+    font-family: "Cambria Math", "Times New Roman", serif;
+    font-size: 22px;
+    line-height: 1.15;
+    white-space: nowrap;
+  }
+
+  .gif-frame {
+    min-height: 0;
+    border: 1px solid var(--line);
+    background: #fffdf9;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+  }
+
+  .gif-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .frame-caption {
+    display: block;
+    color: var(--muted);
+    font-size: 18px;
+    line-height: 1.35;
+  }
+</style>
+</head>
+<body>
+<main class="slide">
+  <header class="head">
+    <div class="no">10</div>
+    <h1>动态过程</h1>
+    <p class="kicker">用同一采样预算观察分布随时间接近目标的方式。</p>
+  </header>
+  <section class="main">
+    <div class="process-board">
+      <div class="process-pair">
+        <article class="process-card diffusion">
+          <div class="process-head">
+            <div class="process-method">Diffusion</div>
+            <div class="process-equation">x_T → x_0</div>
+          </div>
+          <div class="gif-frame">
+            <img src="../assets/diffusion_process.gif" alt="Diffusion reverse sampling process">
+          </div>
+          <div class="frame-caption">
+            <span>反向采样在多个噪声层级中逐步恢复结构。</span>
+          </div>
+        </article>
+
+        <article class="process-card flow">
+          <div class="process-head">
+            <div class="process-method">Flow Matching</div>
+            <div class="process-equation">dz / dt = v<sub>θ</sub>(z,t)</div>
+          </div>
+          <div class="gif-frame">
+            <img src="../assets/flow_matching_process.gif" alt="Flow matching ODE sampling process">
+          </div>
+          <div class="frame-caption">
+            <span>ODE 采样沿学习到的速度场连续推进。</span>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+  <footer class="foot">
+    <span>采样过程</span>
+    <span>路径本身也是模型行为的一部分</span>
+  </footer>
+</main>
+</body>
+</html>

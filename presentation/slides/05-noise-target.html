@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>05 · 噪声目标</title>
+<link rel="stylesheet" href="../vendor/katex/katex.min.css">
+<link rel="stylesheet" href="../shared.css">
+<style>
+  .noise-board {
+    height: 100%;
+    border: 1px solid var(--line-strong);
+    background: #fff;
+    box-shadow: var(--shadow);
+    padding: 32px 34px 28px;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 20px;
+    min-height: 0;
+  }
+
+  .noise-head {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 28px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 16px;
+  }
+
+  .noise-head h2 {
+    margin: 0;
+    font-family: Georgia, "Times New Roman", "SimSun", serif;
+    font-size: 44px;
+    line-height: 1.05;
+  }
+
+  .noise-head span {
+    color: var(--muted);
+    font-size: 15px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .noise-main {
+    display: grid;
+    grid-template-columns: minmax(0, 1.12fr) minmax(0, 0.88fr);
+    gap: 34px;
+    min-height: 0;
+  }
+
+  .noise-chain {
+    display: grid;
+    grid-template-rows: 0.92fr 1fr 1.14fr 0.92fr 1.08fr;
+    align-content: stretch;
+    gap: 0;
+    min-height: 0;
+  }
+
+  .derive-row {
+    grid-template-columns: 96px minmax(0, 1fr);
+    padding: 0;
+    align-items: center;
+  }
+
+  .derive-formula {
+    font-size: 28px;
+    line-height: 1.22;
+  }
+
+  .derive-formula.large {
+    font-size: 33px;
+    line-height: 1.16;
+  }
+
+  .loss-row {
+    background: var(--soft-blue);
+    border: 1px solid #c7d5e8;
+    padding: 15px 20px;
+    margin-top: 2px;
+  }
+
+  .noise-side {
+    border-left: 1px solid var(--line);
+    padding-left: 30px;
+    display: grid;
+    grid-template-rows: auto auto minmax(0, 1fr) auto;
+    align-content: stretch;
+    gap: 18px;
+    min-height: 0;
+  }
+
+  .side-title {
+    margin: 0;
+    font-family: Georgia, "Times New Roman", "SimSun", serif;
+    font-size: 36px;
+    line-height: 1.08;
+  }
+
+  .train-strip {
+    display: grid;
+    gap: 10px;
+  }
+
+  .train-step {
+    display: grid;
+    grid-template-columns: 76px 1fr;
+    gap: 14px;
+    align-items: baseline;
+    border-top: 1px solid var(--line);
+    padding-top: 11px;
+  }
+
+  .train-step:first-child {
+    border-top: 0;
+    padding-top: 0;
+  }
+
+  .train-step .label {
+    color: var(--muted);
+    font-size: 14px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .train-step .text {
+    font-size: 21px;
+    line-height: 1.35;
+  }
+
+  .signal-loop {
+    border: 1px solid var(--line);
+    background: #fffdf9;
+    padding: 17px 19px;
+    display: grid;
+    gap: 10px;
+    min-height: 0;
+    align-content: center;
+  }
+
+  .signal-row {
+    display: grid;
+    grid-template-columns: minmax(0, 0.86fr) 34px minmax(0, 1.14fr);
+    gap: 12px;
+    align-items: stretch;
+  }
+
+  .signal-arrow {
+    display: grid;
+    place-items: center;
+    color: var(--muted);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 28px;
+    line-height: 1;
+  }
+
+  .signal-chip {
+    border: 1px solid var(--line);
+    background: #fff;
+    min-height: 66px;
+    padding: 10px 12px;
+    display: grid;
+    align-content: center;
+    gap: 5px;
+  }
+
+  .signal-chip .label {
+    color: var(--muted);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .signal-chip .mini-formula {
+    font-family: "Cambria Math", "Times New Roman", "SimSun", serif;
+    font-size: 23px;
+    line-height: 1.18;
+    min-width: 0;
+  }
+
+  .signal-chip.wide .mini-formula {
+    font-size: 20px;
+  }
+
+  .x0-box {
+    border: 1px solid var(--line);
+    background: #fffdf9;
+    padding: 15px 18px;
+  }
+
+  .x0-box .formula {
+    font-size: 25px;
+    white-space: normal;
+  }
+
+</style>
+</head>
+<body>
+<main class="slide">
+  <header class="head">
+    <div class="no">05</div>
+    <h1>噪声目标</h1>
+    <p class="kicker">从局部后验 KL 到噪声均方误差，是 DDPM 训练目标的关键化简。</p>
+  </header>
+  <section class="main">
+    <article class="noise-board">
+      <div class="noise-head">
+        <h2>预测噪声，是反向高斯均值的一种参数化</h2>
+        <span>后验 KL → 噪声 MSE</span>
+      </div>
+
+      <div class="noise-main">
+        <div class="noise-chain">
+          <div class="derive-row">
+            <div class="derive-index">KL</div>
+            <div class="derive-content">
+              <div class="derive-formula"><span class="tex" data-tex="\mathrm{KL}\!\left(N(\mu_t^*,\sigma_t^2 I)\,\|\,N(\mu_{\theta},\sigma_t^2 I)\right)"></span></div>
+            </div>
+          </div>
+
+          <div class="derive-row">
+            <div class="derive-index">均值</div>
+            <div class="derive-content">
+              <div class="derive-formula large"><span class="tex" data-tex="\mathrm{KL}\propto \|\mu_t^*(x_t,x_0)-\mu_{\theta}(x_t,t)\|^2"></span></div>
+            </div>
+          </div>
+
+          <div class="derive-row">
+            <div class="derive-index">参数化</div>
+            <div class="derive-content">
+              <div class="derive-formula">
+                <span class="tex" data-tex="\mu_{\theta}=\frac{1}{\sqrt{\alpha_t}}\left(x_t-\frac{\beta_t}{\sqrt{1-\bar{\alpha}_t}}\epsilon_{\theta}(x_t,t)\right)"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="derive-row">
+            <div class="derive-index">监督量</div>
+            <div class="derive-content">
+              <div class="derive-formula large">
+                <span class="tex" data-tex="\epsilon=\frac{x_t-\sqrt{\bar{\alpha}_t}x_0}{\sqrt{1-\bar{\alpha}_t}}"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="derive-row">
+            <div class="derive-index">损失</div>
+            <div class="derive-content loss-row">
+              <div class="derive-formula large">
+                <span class="tex" data-tex="L_{\mathrm{simple}}=\mathbb{E}_{x_0,t,\epsilon}\|\epsilon-\epsilon_{\theta}(x_t,t)\|^2"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <aside class="noise-side">
+          <h2 class="side-title">为何是 ε</h2>
+          <div class="train-strip">
+            <div class="train-step">
+              <div class="label">闭式解</div>
+              <div class="text">由 x<sub>0</sub>、t、ε 直接构造 x<sub>t</sub>，其中 ε 是已知标签。</div>
+            </div>
+            <div class="train-step">
+              <div class="label">参数化</div>
+              <div class="text">μ<sub>θ</sub> 不单独学习，而由 ε<sub>θ</sub>(x<sub>t</sub>, t) 代入均值公式。</div>
+            </div>
+            <div class="train-step">
+              <div class="label">损失</div>
+              <div class="text">均值误差经参数化后，训练项落为 ||ε − ε<sub>θ</sub>||<sup>2</sup>。</div>
+            </div>
+          </div>
+          <div class="signal-loop">
+            <div class="signal-row">
+              <div class="signal-chip">
+                <div class="label">采样</div>
+                <div class="mini-formula"><span class="tex" data-tex="x_0,\ t,\ \epsilon"></span></div>
+              </div>
+              <div class="signal-arrow">→</div>
+              <div class="signal-chip wide">
+                <div class="label">前向</div>
+                <div class="mini-formula"><span class="tex" data-tex="x_t=\sqrt{\bar{\alpha}_t}x_0+\sqrt{1-\bar{\alpha}_t}\epsilon"></span></div>
+              </div>
+            </div>
+            <div class="signal-row">
+              <div class="signal-chip">
+                <div class="label">输入</div>
+                <div class="mini-formula"><span class="tex" data-tex="x_t,\ t"></span></div>
+              </div>
+              <div class="signal-arrow">→</div>
+              <div class="signal-chip">
+                <div class="label">预测</div>
+                <div class="mini-formula"><span class="tex" data-tex="\epsilon_{\theta}(x_t,t)"></span></div>
+              </div>
+            </div>
+            <div class="signal-row">
+              <div class="signal-chip">
+                <div class="label">目标</div>
+                <div class="mini-formula"><span class="tex" data-tex="\epsilon"></span></div>
+              </div>
+              <div class="signal-arrow">↔</div>
+              <div class="signal-chip">
+                <div class="label">mse</div>
+                <div class="mini-formula"><span class="tex" data-tex="\|\epsilon-\epsilon_{\theta}\|^2"></span></div>
+              </div>
+            </div>
+          </div>
+          <div class="x0-box">
+            <div class="formula">
+              <span class="tex" data-tex="\hat{x}_0=\frac{x_t-\sqrt{1-\bar{\alpha}_t}\epsilon_{\theta}}{\sqrt{\bar{\alpha}_t}}"></span>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </article>
+  </section>
+  <footer class="foot">
+    <span>已知注入噪声成为监督目标</span>
+    <span>预测 ε 用于参数化反向高斯均值</span>
+  </footer>
+</main>
+<script src="../vendor/katex/katex.min.js"></script>
+<script src="../vendor/katex/render-tex.js"></script>
+</body>
+</html>

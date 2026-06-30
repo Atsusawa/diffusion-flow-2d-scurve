@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>02 · 分布变换</title>
+<link rel="stylesheet" href="../vendor/katex/katex.min.css">
+<link rel="stylesheet" href="../shared.css">
+<style>
+  .distribution-lens {
+    height: 100%;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) 164px;
+    gap: 16px;
+  }
+
+  .transport-grid {
+    min-height: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 0.76fr) minmax(0, 1.34fr) minmax(0, 0.76fr);
+    gap: 20px;
+    align-items: stretch;
+  }
+
+  .dist-card,
+  .time-card,
+  .observable-card {
+    border: 1px solid var(--line-strong);
+    background: rgba(255, 255, 255, 0.86);
+    box-shadow: var(--shadow);
+  }
+
+  .dist-card {
+    display: grid;
+    grid-template-rows: auto auto auto;
+    gap: 10px;
+    padding: 18px 24px;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .dist-label,
+  .small-label {
+    color: var(--muted);
+    font-size: 15px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .dist-title {
+    margin-top: 8px;
+    font-family: Georgia, "Times New Roman", "SimSun", serif;
+    font-size: 40px;
+    line-height: 1;
+  }
+
+  .mini-plot {
+    width: 100%;
+    height: 292px;
+  }
+
+  .dist-formula {
+    padding: 12px 14px;
+    border: 1px solid var(--line);
+    background: #fffdf9;
+    font-family: "Cambria Math", "Times New Roman", "SimSun", serif;
+    font-size: 26px;
+    line-height: 1.25;
+    white-space: nowrap;
+  }
+
+  .time-card {
+    padding: 22px 28px;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 12px;
+    overflow: hidden;
+  }
+
+  .time-card .main-formula {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--line);
+    background: #fffdf9;
+    min-height: 70px;
+    font-family: "Cambria Math", "Times New Roman", "SimSun", serif;
+    font-size: 40px;
+    line-height: 1.15;
+  }
+
+  .time-axis {
+    position: relative;
+    min-height: 0;
+    display: grid;
+    align-items: center;
+  }
+
+  .axis-svg {
+    width: 100%;
+    height: 100%;
+    min-height: 188px;
+  }
+
+  .axis-caption {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    color: var(--muted);
+    font-size: 18px;
+    line-height: 1.35;
+  }
+
+  .axis-caption strong {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .observable-row {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .observable-card {
+    padding: 13px 15px;
+    display: grid;
+    grid-template-columns: 72px 1fr;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .observable-card svg {
+    width: 72px;
+    height: 72px;
+  }
+
+  .observable-card .obs-title {
+    font-family: Georgia, "Times New Roman", "SimSun", serif;
+    font-size: 28px;
+    line-height: 1.05;
+  }
+
+  .observable-card .obs-text {
+    margin-top: 8px;
+    color: var(--muted);
+    font-size: 18px;
+    line-height: 1.38;
+  }
+</style>
+</head>
+<body>
+<main class="slide">
+  <header class="head">
+    <div class="no">02</div>
+    <h1>分布变换</h1>
+    <p class="kicker">把二维点云任务写成时间分布族，终态、轨迹、局部速度场和采样预算因此落在同一框架中。</p>
+  </header>
+  <section class="main">
+    <div class="distribution-lens">
+      <div class="transport-grid">
+        <article class="dist-card">
+          <div>
+            <div class="dist-label">基分布</div>
+            <div class="dist-title">基分布</div>
+          </div>
+          <svg class="mini-plot" viewBox="0 0 520 360" role="img" aria-label="Gaussian distribution">
+            <rect x="32" y="24" width="456" height="312" fill="#fff" stroke="#8d95a3" stroke-width="2"></rect>
+            <g stroke="#e2e5ea" stroke-width="1">
+              <path d="M108 24V336 M184 24V336 M260 24V336 M336 24V336 M412 24V336"></path>
+              <path d="M32 76H488 M32 128H488 M32 180H488 M32 232H488 M32 284H488"></path>
+            </g>
+            <g stroke="#b9c0cb" stroke-width="2">
+              <path d="M260 24V336"></path>
+              <path d="M32 180H488"></path>
+            </g>
+            <g fill="#2b3546" opacity="0.36">
+              <circle cx="204" cy="132" r="3"/><circle cx="245" cy="116" r="3"/><circle cx="274" cy="145" r="3"/><circle cx="289" cy="108" r="3"/>
+              <circle cx="188" cy="181" r="3"/><circle cx="227" cy="190" r="3"/><circle cx="262" cy="174" r="3"/><circle cx="303" cy="185" r="3"/>
+              <circle cx="336" cy="153" r="3"/><circle cx="356" cy="203" r="3"/><circle cx="318" cy="234" r="3"/><circle cx="264" cy="250" r="3"/>
+              <circle cx="223" cy="233" r="3"/><circle cx="170" cy="221" r="3"/><circle cx="155" cy="154" r="3"/><circle cx="205" cy="273" r="3"/>
+              <circle cx="372" cy="252" r="3"/><circle cx="405" cy="173" r="3"/><circle cx="123" cy="193" r="3"/><circle cx="113" cy="131" r="3"/>
+              <circle cx="294" cy="282" r="3"/><circle cx="342" cy="96" r="3"/><circle cx="140" cy="263" r="3"/><circle cx="390" cy="112" r="3"/>
+              <circle cx="250" cy="211" r="3"/><circle cx="284" cy="214" r="3"/><circle cx="228" cy="151" r="3"/><circle cx="315" cy="132" r="3"/>
+              <circle cx="178" cy="102" r="3"/><circle cx="372" cy="304" r="3"/><circle cx="92" cy="242" r="3"/><circle cx="438" cy="219" r="3"/>
+            </g>
+          </svg>
+          <div class="dist-formula"><span class="tex" data-tex="z_0\sim N(0,I)"></span></div>
+        </article>
+
+        <article class="time-card">
+          <div class="label-row">
+            <span class="tag dark">时间分布族</span>
+            <span class="tag">边缘分布路径</span>
+          </div>
+          <div class="time-axis">
+            <svg class="axis-svg" viewBox="0 0 680 300" role="img" aria-label="time distribution family">
+              <path d="M70 150 C190 54, 420 232, 520 150" fill="none" stroke="#2b3340" stroke-width="7" stroke-linecap="round"></path>
+              <path d="M520 150 L499 141 M520 150 L511 172" fill="none" stroke="#2b3340" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"></path>
+              <g fill="#fffdf9" stroke="#aeb5bf" stroke-width="2">
+                <circle cx="88" cy="150" r="45"></circle>
+                <circle cx="340" cy="150" r="58"></circle>
+                <circle cx="592" cy="150" r="45"></circle>
+              </g>
+              <g font-family="Georgia, 'Times New Roman', serif" font-size="34" fill="#17202f" text-anchor="middle">
+                <text x="88" y="162">p<tspan baseline-shift="sub" font-size="22">0</tspan></text>
+                <text x="340" y="162">p<tspan baseline-shift="sub" font-size="22">t</tspan></text>
+                <text x="592" y="162">p<tspan baseline-shift="sub" font-size="22">1</tspan></text>
+              </g>
+              <g font-family="Bahnschrift, 'Segoe UI', sans-serif" font-size="18" fill="#667085" text-anchor="middle">
+                <text x="88" y="224">t = 0</text>
+                <text x="340" y="244">0 &lt; t &lt; 1</text>
+                <text x="592" y="244">t = 1</text>
+              </g>
+              <text x="340" y="82" text-anchor="middle" font-family="Bahnschrift, 'Segoe UI', sans-serif" font-size="22" fill="#667085">随时间变化的边缘分布</text>
+            </svg>
+          </div>
+          <div class="main-formula"><span class="tex" data-tex="p_0\longrightarrow p_t\longrightarrow p_1"></span></div>
+          <div class="axis-caption">
+            <div><strong>起点</strong>容易采样、无结构先验</div>
+            <div><strong>中间态</strong>由模型路径定义</div>
+            <div><strong>终点</strong>逼近目标数据分布</div>
+          </div>
+        </article>
+
+        <article class="dist-card">
+          <div>
+            <div class="dist-label">数据分布</div>
+            <div class="dist-title">目标分布</div>
+          </div>
+          <svg class="mini-plot" viewBox="0 0 520 360" role="img" aria-label="S curve distribution">
+            <rect x="32" y="24" width="456" height="312" fill="#fff" stroke="#8d95a3" stroke-width="2"></rect>
+            <g stroke="#e2e5ea" stroke-width="1">
+              <path d="M108 24V336 M184 24V336 M260 24V336 M336 24V336 M412 24V336"></path>
+              <path d="M32 76H488 M32 128H488 M32 180H488 M32 232H488 M32 284H488"></path>
+            </g>
+            <g stroke="#b9c0cb" stroke-width="2">
+              <path d="M260 24V336"></path>
+              <path d="M32 180H488"></path>
+            </g>
+            <path d="M250 60 C370 78, 396 140, 292 174 C174 214, 142 278, 284 312" fill="none" stroke="#dc7f2c" stroke-width="16" stroke-linecap="round" opacity="0.28"></path>
+            <g fill="#dc7f2c" opacity="0.82">
+              <circle cx="248" cy="62" r="3"/><circle cx="272" cy="68" r="3"/><circle cx="296" cy="77" r="3"/><circle cx="324" cy="92" r="3"/>
+              <circle cx="350" cy="116" r="3"/><circle cx="365" cy="140" r="3"/><circle cx="351" cy="159" r="3"/><circle cx="322" cy="173" r="3"/>
+              <circle cx="288" cy="184" r="3"/><circle cx="254" cy="197" r="3"/><circle cx="219" cy="213" r="3"/><circle cx="185" cy="235" r="3"/>
+              <circle cx="164" cy="262" r="3"/><circle cx="178" cy="285" r="3"/><circle cx="212" cy="300" r="3"/><circle cx="256" cy="311" r="3"/>
+              <circle cx="238" cy="75" r="3"/><circle cx="315" cy="86" r="3"/><circle cx="373" cy="130" r="3"/><circle cx="337" cy="165" r="3"/>
+              <circle cx="274" cy="189" r="3"/><circle cx="198" cy="227" r="3"/><circle cx="153" cy="274" r="3"/><circle cx="232" cy="316" r="3"/>
+            </g>
+          </svg>
+          <div class="dist-formula"><span class="tex" data-tex="z_1\sim p_{\mathrm{data}}"></span></div>
+        </article>
+      </div>
+
+      <div class="observable-row">
+        <div class="observable-card">
+          <svg viewBox="0 0 100 100" aria-hidden="true">
+            <rect x="10" y="14" width="80" height="72" fill="#fffdf9" stroke="#aeb5bf" stroke-width="2"></rect>
+            <path d="M46 24 C72 32, 74 48, 52 58 C26 69, 29 82, 59 84" fill="none" stroke="#dc7f2c" stroke-width="7" stroke-linecap="round"></path>
+          </svg>
+          <div>
+            <div class="small-label">终态</div>
+            <div class="obs-title">终态分布</div>
+            <div class="obs-text">看 p<sub>1</sub> 是否贴近目标数据分布。</div>
+          </div>
+        </div>
+        <div class="observable-card">
+          <svg viewBox="0 0 100 100" aria-hidden="true">
+            <rect x="10" y="14" width="80" height="72" fill="#fffdf9" stroke="#aeb5bf" stroke-width="2"></rect>
+            <path d="M24 74 C38 30, 54 86, 76 28" fill="none" stroke="#2f66b3" stroke-width="5" stroke-linecap="round"></path>
+            <path d="M22 70 C40 62, 54 46, 78 30" fill="none" stroke="#2e8b5f" stroke-width="5" stroke-linecap="round"></path>
+            <circle cx="24" cy="74" r="5" fill="#fff" stroke="#2b3340" stroke-width="3"></circle>
+          </svg>
+          <div>
+            <div class="small-label">轨迹</div>
+            <div class="obs-title">样本轨迹</div>
+            <div class="obs-text">看同一起点怎样沿时间路径移动。</div>
+          </div>
+        </div>
+        <div class="observable-card">
+          <svg viewBox="0 0 100 100" aria-hidden="true">
+            <rect x="10" y="14" width="80" height="72" fill="#fffdf9" stroke="#aeb5bf" stroke-width="2"></rect>
+            <g stroke="#2b3340" stroke-width="2.6" stroke-linecap="round" fill="#2b3340" opacity="0.78">
+              <path d="M24 32 L39 28"></path><polygon points="39,28 34,25 35,32"></polygon>
+              <path d="M53 30 L67 37"></path><polygon points="67,37 61,37 64,31"></polygon>
+              <path d="M24 55 L41 50"></path><polygon points="41,50 36,47 37,54"></polygon>
+              <path d="M55 57 L72 52"></path><polygon points="72,52 67,49 68,56"></polygon>
+              <path d="M29 76 L44 68"></path><polygon points="44,68 39,67 43,73"></polygon>
+              <path d="M56 75 L71 66"></path><polygon points="71,66 65,65 69,71"></polygon>
+            </g>
+          </svg>
+          <div>
+            <div class="small-label">速度场</div>
+            <div class="obs-title">局部速度场</div>
+            <div class="obs-text">看每个位置的速度或更新方向。</div>
+          </div>
+        </div>
+        <div class="observable-card">
+          <svg viewBox="0 0 100 100" aria-hidden="true">
+            <rect x="10" y="14" width="80" height="72" fill="#fffdf9" stroke="#aeb5bf" stroke-width="2"></rect>
+            <g stroke="#d8d1c7" stroke-width="1.4">
+              <path d="M22 72H82 M22 52H82 M22 32H82"></path>
+              <path d="M26 24V78 M46 24V78 M66 24V78"></path>
+            </g>
+            <path d="M24 70 C34 60, 39 58, 48 46 S67 30, 78 25" fill="none" stroke="#2e8b5f" stroke-width="4.2" stroke-linecap="round"></path>
+            <path d="M24 76 C34 66, 42 62, 52 60 S70 58, 80 55" fill="none" stroke="#2f66b3" stroke-width="4.2" stroke-linecap="round"></path>
+            <g fill="#17202f" font-family="Georgia, 'Times New Roman', serif" font-size="13" text-anchor="middle">
+              <text x="26" y="91">3</text>
+              <text x="50" y="91">20</text>
+              <text x="78" y="91">80</text>
+            </g>
+          </svg>
+          <div>
+            <div class="small-label">NFE</div>
+            <div class="obs-title">采样预算</div>
+            <div class="obs-text">看步数改变时误差如何响应。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <footer class="foot">
+    <span>分布输运视角</span>
+    <span>终态分布 · 样本轨迹 · 局部速度场 · 采样预算</span>
+  </footer>
+</main>
+<script src="../vendor/katex/katex.min.js"></script>
+<script src="../vendor/katex/render-tex.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>09 · 最终分布</title>
+<link rel="stylesheet" href="../shared.css">
+<style>
+  .final-board {
+    height: 100%;
+    display: grid;
+    grid-template-columns: minmax(0, 1.38fr) minmax(0, 0.62fr);
+    gap: 34px;
+    min-height: 0;
+  }
+
+  .distribution-panel {
+    min-height: 0;
+    border: 1px solid var(--line-strong);
+    background: #fff;
+    box-shadow: var(--shadow);
+    padding: 26px 26px 22px;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 16px;
+  }
+
+  .panel-head {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    align-items: end;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 13px;
+  }
+
+  .sample-label {
+    display: grid;
+    gap: 5px;
+  }
+
+  .sample-label .method {
+    font-family: Georgia, "Times New Roman", "SimSun", serif;
+    font-size: 33px;
+    line-height: 1.04;
+  }
+
+  .sample-label .sub {
+    color: var(--muted);
+    font-size: 15px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .sample-label.target .method { color: var(--orange); }
+  .sample-label.diffusion .method { color: var(--blue); }
+  .sample-label.flow .method { color: var(--green); }
+
+  .distribution-image {
+    min-height: 0;
+    border: 1px solid var(--line);
+    background: #fff;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+  }
+
+  .distribution-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .metric-panel {
+    min-height: 0;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 18px;
+  }
+
+  .observation-card {
+    border: 1px solid var(--line-strong);
+    background: #fff;
+    box-shadow: var(--shadow);
+    padding: 27px 28px;
+    display: grid;
+    gap: 14px;
+  }
+
+  .observation-card .label,
+  .metric-block .label {
+    color: var(--muted);
+    font-size: 14px;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+  }
+
+  .observation-card .claim {
+    font-family: Georgia, "Times New Roman", "SimSun", serif;
+    font-size: 36px;
+    line-height: 1.12;
+  }
+
+  .metric-block {
+    border: 1px solid var(--line);
+    background: #fffdf9;
+    padding: 21px 22px;
+    display: grid;
+    gap: 18px;
+  }
+
+  .metric-title {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 14px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 12px;
+  }
+
+  .metric-title h2 {
+    margin: 0;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 34px;
+    line-height: 1;
+  }
+
+  .metric-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 14px;
+    align-items: baseline;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 15px;
+  }
+
+  .metric-row:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .metric-row .name {
+    display: grid;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .metric-row .method {
+    font-size: 22px;
+    line-height: 1.1;
+  }
+
+  .metric-row .desc {
+    color: var(--muted);
+    font-size: 15px;
+    letter-spacing: 0.04em;
+  }
+
+  .metric-row .value {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 38px;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .metric-row.diffusion .value { color: var(--blue); }
+  .metric-row.flow .value { color: var(--green); }
+  .metric-row.nfe .value { color: var(--orange); }
+</style>
+</head>
+<body>
+<main class="slide">
+  <header class="head">
+    <div class="no">09</div>
+    <h1>最终分布</h1>
+    <p class="kicker">在相同实验协议下，先看终点样本是否贴近目标分布。</p>
+  </header>
+  <section class="main">
+    <div class="final-board">
+      <figure class="distribution-panel">
+        <div class="panel-head">
+          <div class="sample-label target">
+            <div class="method">目标分布</div>
+            <div class="sub">S-curve 样本</div>
+          </div>
+          <div class="sample-label diffusion">
+            <div class="method">Diffusion</div>
+            <div class="sub">DDIM · 80 步</div>
+          </div>
+          <div class="sample-label flow">
+            <div class="method">Flow Matching</div>
+            <div class="sub">ODE · 80 步</div>
+          </div>
+        </div>
+
+        <div class="distribution-image">
+          <img src="../assets/final_distribution_triptych.png" alt="Target, diffusion and flow matching final samples">
+        </div>
+      </figure>
+
+      <aside class="metric-panel">
+        <div class="observation-card">
+          <div class="label">观察一</div>
+          <div class="claim">两者均恢复主形状；Flow Matching 的样本带更紧。</div>
+        </div>
+
+        <div class="metric-block">
+          <div class="metric-title">
+            <h2>SWD ↓</h2>
+            <div class="label">切片 Wasserstein 距离</div>
+          </div>
+          <div class="metric-row diffusion">
+            <div class="name">
+              <div class="method">Diffusion</div>
+              <div class="desc">DDIM 采样</div>
+            </div>
+            <div class="value">0.2472</div>
+          </div>
+          <div class="metric-row flow">
+            <div class="name">
+              <div class="method">Flow Matching</div>
+              <div class="desc">ODE 采样</div>
+            </div>
+            <div class="value">0.0601</div>
+          </div>
+          <div class="metric-row nfe">
+            <div class="name">
+              <div class="method">NFE</div>
+              <div class="desc">相同预算</div>
+            </div>
+            <div class="value">80</div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+  <footer class="foot">
+    <span>终态分布是第一层观察</span>
+    <span>终点相似并不能完全说明采样动力学</span>
+  </footer>
+</main>
+</body>
+</html>

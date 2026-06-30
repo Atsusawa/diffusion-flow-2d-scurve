@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>从噪声到几何 · Diffusion vs Flow Matching</title>
+<script>
+  window.DECK_MANIFEST = [
+    { file: "slides/01-noise-shape.html", label: "噪声成形" },
+    { file: "slides/02-distribution.html", label: "分布变换" },
+    { file: "slides/03-ddpm-need.html", label: "变分入口" },
+    { file: "slides/04-gaussian-chain.html", label: "高斯后验" },
+    { file: "slides/05-noise-target.html", label: "噪声目标" },
+    { file: "slides/06-learnable-noise.html", label: "速度目标" },
+    { file: "slides/07-correction.html", label: "直觉校准" },
+    { file: "slides/08-control.html", label: "实验设定" },
+    { file: "slides/09-final.html", label: "最终分布" },
+    { file: "slides/10-paired.html", label: "动态过程" },
+    { file: "slides/11-smooth.html", label: "路径几何" },
+    { file: "slides/12-field.html", label: "早期动力" },
+    { file: "slides/13-budget.html", label: "采样预算" },
+    { file: "slides/14-mechanism.html", label: "总结比较" }
+  ];
+  window.DECK_WIDTH = 1920;
+  window.DECK_HEIGHT = 1080;
+  window.DECK_OVERVIEW = "grid";
+</script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; overflow: hidden; font-family: "Bahnschrift", "Segoe UI", "Microsoft YaHei", sans-serif; background: #111827; }
+  .overview { position: fixed; inset: 0; }
+  body[data-mode="present"] .overview { display: none; }
+  body[data-mode="overview"] #present-ui { display: none; }
+  #ov-grid { display: flex; justify-content: center; perspective: 2200px; perspective-origin: 50% 42%; background: radial-gradient(120% 90% at 50% 0%, #f7f3ec, #e4ded2 75%); }
+  body[data-grid="fit"] #ov-grid { overflow: hidden; align-items: center; }
+  body[data-grid="scroll"] #ov-grid { overflow-y: auto; overflow-x: hidden; align-items: flex-start; padding: 74px 0 110px; }
+  .wall { display: grid; gap: 20px; transform-origin: center center; margin: 0 auto; }
+  #ov-grid .card { position: relative; aspect-ratio: 16/9; border-radius: 6px; overflow: hidden; background: #fff; cursor: pointer; box-shadow: 0 16px 34px rgba(40,34,24,0.20), 0 3px 10px rgba(40,34,24,0.12); transition: transform .24s cubic-bezier(.2,.7,.2,1), box-shadow .24s; }
+  #ov-grid .card:hover { transform: scale(1.15); box-shadow: 0 46px 90px rgba(40,34,24,0.34), 0 14px 30px rgba(40,34,24,0.2); z-index: 20; }
+  .card .thumb { position: absolute; top: 0; left: 0; width: 1920px; height: 1080px; transform-origin: top left; pointer-events: none; }
+  .card .thumb iframe { width: 1920px; height: 1080px; border: 0; display: block; background: #fff; pointer-events: none; }
+  .card .num { position: absolute; bottom: 6px; left: 7px; background: rgba(16,12,7,0.76); color: #fff; font-size: 11px; line-height: 1; padding: 4px 7px; border-radius: 4px; font-variant-numeric: tabular-nums; letter-spacing: 0.03em; z-index: 3; pointer-events: none; }
+  .overview-title { position: fixed; top: 24px; left: 0; right: 0; text-align: center; font-size: 13px; letter-spacing: 0.22em; text-transform: uppercase; z-index: 40; pointer-events: none; color: #5a5346; opacity: 0.66; }
+  .start-btn { position: fixed; bottom: 26px; right: 26px; border: 0; padding: 13px 24px; border-radius: 999px; font-size: 15px; font-family: inherit; letter-spacing: 0.04em; cursor: pointer; z-index: 200; background: #17120d; color: #fff; box-shadow: 0 8px 28px rgba(40,34,24,0.28); }
+  #stage { position: fixed; top: 50%; left: 50%; transform-origin: top left; will-change: transform; background: #fff; box-shadow: 0 10px 60px rgba(0,0,0,0.4); }
+  #stage iframe { width: 100%; height: 100%; border: 0; display: block; background: #fff; }
+  .counter { position: fixed; bottom: 20px; right: 20px; background: rgba(0,0,0,0.65); color: #fff; padding: 6px 14px; border-radius: 999px; font-size: 13px; letter-spacing: 0.05em; font-variant-numeric: tabular-nums; z-index: 100; opacity: 0.72; }
+  .counter .label { color: rgba(255,255,255,0.7); margin-left: 8px; }
+  .overview-btn { position: fixed; top: 20px; left: 20px; background: rgba(0,0,0,0.55); color: rgba(255,255,255,0.85); border: 0; padding: 7px 14px; border-radius: 999px; font-size: 13px; font-family: inherit; cursor: pointer; z-index: 100; opacity: 0.62; }
+  .overview-btn:hover { opacity: 1; }
+  .nav-zone { position: fixed; top: 0; bottom: 0; width: 15%; cursor: pointer; z-index: 50; }
+  .nav-zone.left { left: 0; } .nav-zone.right { right: 0; }
+  .nav-hint { position: absolute; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; border-radius: 999px; background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6); display: flex; align-items: center; justify-content: center; font-size: 22px; opacity: 0; transition: opacity .2s; }
+  .nav-zone.left .nav-hint { left: 20px; } .nav-zone.right .nav-hint { right: 20px; }
+  .nav-zone:hover .nav-hint { opacity: 1; }
+  .print-stack { display:none; }
+  @media print {
+    @page { size: 1920px 1080px; margin: 0; }
+    html, body { background: #fff; overflow: visible; height: auto; }
+    body[data-mode] .overview { display: none !important; }
+    #stage { position: static; transform: none !important; box-shadow: none; }
+    .counter, .nav-zone, .overview-btn, .start-btn { display: none !important; }
+    .print-stack { display: block; }
+    .print-stack iframe { width: 1920px; height: 1080px; page-break-after: always; display: block; }
+  }
+</style>
+</head>
+<body data-mode="overview" data-ov="grid">
+  <div id="ov-grid" class="overview">
+    <div class="overview-title">Overview · 点击任意页进入演示</div>
+    <div class="wall-wrap"><div class="wall" id="wall"></div></div>
+  </div>
+  <button class="start-btn" id="startBtn">开始演示</button>
+  <div id="present-ui">
+    <div id="stage"><iframe id="frame" src="about:blank"></iframe></div>
+    <button class="overview-btn" id="overviewBtn">概览</button>
+    <div class="nav-zone left" id="navL"><div class="nav-hint">‹</div></div>
+    <div class="nav-zone right" id="navR"><div class="nav-hint">›</div></div>
+    <div class="counter" id="counter">1 / 1</div>
+  </div>
+  <div class="print-stack" id="printStack"></div>
+<script>
+(function () {
+  const W = window.DECK_WIDTH || 1920, H = window.DECK_HEIGHT || 1080;
+  const deck = window.DECK_MANIFEST || [];
+  const stage = document.getElementById('stage');
+  const frame = document.getElementById('frame');
+  const counter = document.getElementById('counter');
+  const wall = document.getElementById('wall');
+  const printStack = document.getElementById('printStack');
+  const storageKey = 'deck-v2-' + location.pathname;
+  let current = 0;
+  stage.style.width = W + 'px';
+  stage.style.height = H + 'px';
+  function setMode(mode) {
+    document.body.setAttribute('data-mode', mode);
+    if (mode === 'present') { fit(); show(current); } else requestAnimationFrame(buildGrid);
+  }
+  function makeCard(idx, scale) {
+    const card = document.createElement('div');
+    card.className = 'card';
+    const thumb = document.createElement('div');
+    thumb.className = 'thumb';
+    thumb.style.transform = 'scale(' + scale + ')';
+    const ifr = document.createElement('iframe');
+    ifr.src = deck[idx].file;
+    ifr.setAttribute('scrolling', 'no');
+    thumb.appendChild(ifr);
+    const num = document.createElement('div');
+    num.className = 'num';
+    num.textContent = (idx + 1) + ' · ' + deck[idx].label;
+    card.appendChild(thumb);
+    card.appendChild(num);
+    card.addEventListener('click', () => { current = idx; setMode('present'); });
+    return card;
+  }
+  function buildGrid() {
+    wall.innerHTML = '';
+    const n = deck.length, vw = innerWidth, vh = innerHeight, gap = 24;
+    let cols = Math.min(n, Math.max(3, Math.floor((vw * 0.86 + gap) / (280 + gap))));
+    const rows = Math.ceil(n / cols);
+    const cardW = Math.min(310, (vw * 0.86 - (cols - 1) * gap) / cols);
+    const cardH = cardW * 9 / 16;
+    const baseW = cols * cardW + (cols - 1) * gap;
+    const wallH = rows * cardH + (rows - 1) * gap;
+    wall.style.gridTemplateColumns = 'repeat(' + cols + ', 1fr)';
+    wall.style.gap = gap + 'px';
+    wall.style.width = baseW + 'px';
+    for (let i = 0; i < n; i++) wall.appendChild(makeCard(i, cardW / W));
+    if (wallH <= vh * 0.80) {
+      document.body.setAttribute('data-grid', 'fit');
+      const tilt = 'rotateX(13deg) rotateZ(-8deg)';
+      wall.style.transform = tilt;
+      const r = wall.getBoundingClientRect();
+      const s = Math.max(0.6, Math.min(Math.min(vw * 0.92 / r.width, vh * 0.80 / r.height), 1.45));
+      wall.style.transform = 'scale(' + s + ') ' + tilt;
+    } else {
+      document.body.setAttribute('data-grid', 'scroll');
+      wall.style.transform = 'rotateX(10deg) rotateZ(-5deg)';
+    }
+  }
+  function fit() {
+    const s = Math.min(innerWidth / W, innerHeight / H);
+    stage.style.transform = 'translate(' + ((innerWidth - W * s) / 2) + 'px, ' + ((innerHeight - H * s) / 2) + 'px) scale(' + s + ')';
+    stage.style.top = '0';
+    stage.style.left = '0';
+  }
+  function show(idx) {
+    if (idx < 0 || idx >= deck.length) return;
+    current = idx;
+    if (frame.getAttribute('src') !== deck[idx].file) frame.src = deck[idx].file;
+    counter.innerHTML = (idx + 1) + ' / ' + deck.length + ' <span class="label">' + deck[idx].label + '</span>';
+    try { localStorage.setItem(storageKey, String(idx)); } catch (_) {}
+    if (location.hash !== '#' + (idx + 1)) history.replaceState(null, '', '#' + (idx + 1));
+  }
+  function next() { show(Math.min(current + 1, deck.length - 1)); }
+  function prev() { show(Math.max(current - 1, 0)); }
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') { if (document.body.getAttribute('data-mode') === 'present') setMode('overview'); return; }
+    if (e.key === 'p' || e.key === 'P') { window.print(); return; }
+    if (document.body.getAttribute('data-mode') !== 'present') return;
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); next(); }
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); prev(); }
+    if (e.key === 'Home') { e.preventDefault(); show(0); }
+    if (e.key === 'End') { e.preventDefault(); show(deck.length - 1); }
+  });
+  document.getElementById('navL').addEventListener('click', prev);
+  document.getElementById('navR').addEventListener('click', next);
+  document.getElementById('startBtn').addEventListener('click', () => setMode('present'));
+  document.getElementById('overviewBtn').addEventListener('click', () => setMode('overview'));
+  window.addEventListener('resize', () => { fit(); if (document.body.getAttribute('data-mode') === 'overview') buildGrid(); });
+  const hashMatch = location.hash.match(/^#(\d+)$/);
+  if (hashMatch) current = Math.min(parseInt(hashMatch[1], 10) - 1, deck.length - 1);
+  else {
+    try { const v = parseInt(localStorage.getItem(storageKey), 10); if (!isNaN(v) && v >= 0 && v < deck.length) current = v; } catch (_) {}
+  }
+  fit(); show(current);
+  if (hashMatch) setMode('present'); else setMode('overview');
+  window.addEventListener('beforeprint', () => {
+    printStack.innerHTML = '';
+    deck.forEach(item => {
+      const f = document.createElement('iframe');
+      f.src = item.file;
+      printStack.appendChild(f);
+    });
+    printStack.style.display = 'block';
+    stage.style.display = 'none';
+  });
+  window.addEventListener('afterprint', () => {
+    printStack.innerHTML = '';
+    printStack.style.display = 'none';
+    stage.style.display = '';
+  });
+})();
+</script>
+</body>
+</html>
+

@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>07 · 直觉校准</title>
+<link rel="stylesheet" href="../vendor/katex/katex.min.css">
+<link rel="stylesheet" href="../shared.css">
+<style>
+  .calibration-board {
+    height: 100%;
+    border: 1px solid var(--line-strong);
+    background: #fff;
+    box-shadow: var(--shadow);
+    padding: 32px 34px 30px;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 24px;
+    min-height: 0;
+  }
+
+  .board-head {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 30px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 16px;
+  }
+
+  .board-head h2 {
+    margin: 0;
+    font-family: Georgia, "Times New Roman", "SimSun", serif;
+    font-size: 44px;
+    line-height: 1.05;
+  }
+
+  .board-head span {
+    color: var(--muted);
+    font-size: 15px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .calibration-flow {
+    min-height: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 0.76fr) 64px minmax(0, 1.08fr) 64px minmax(0, 0.82fr);
+    gap: 0;
+    align-items: stretch;
+  }
+
+  .lane {
+    min-height: 0;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 18px;
+  }
+
+  .lane-title {
+    color: var(--muted);
+    font-size: 15px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .intuition-stack {
+    min-height: 0;
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    gap: 18px;
+  }
+
+  .intuition-card {
+    border: 1px solid var(--line);
+    background: #fffdf9;
+    padding: 26px 26px 24px;
+    display: grid;
+    align-content: center;
+    gap: 15px;
+    min-height: 0;
+  }
+
+  .intuition-card.diffusion {
+    border-top: 4px solid var(--blue);
+  }
+
+  .intuition-card.flow {
+    border-top: 4px solid var(--green);
+  }
+
+  .method {
+    color: var(--muted);
+    font-size: 15px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .intuition-card .claim {
+    font-family: Georgia, "Times New Roman", "SimSun", serif;
+    font-size: 38px;
+    line-height: 1.12;
+  }
+
+  .intuition-card .sub {
+    color: var(--muted);
+    font-size: 22px;
+    line-height: 1.38;
+  }
+
+  .connector {
+    display: grid;
+    place-items: center;
+    min-width: 0;
+  }
+
+  .connector svg {
+    width: 48px;
+    height: 380px;
+    overflow: visible;
+  }
+
+  .core {
+    border: 1px solid var(--line-strong);
+    background: linear-gradient(180deg, rgba(247,243,236,0.48), rgba(255,255,255,0.92));
+    padding: 28px;
+    display: grid;
+    grid-template-rows: auto auto minmax(0, 1fr);
+    gap: 22px;
+    min-height: 0;
+  }
+
+  .judgement {
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 22px;
+    display: grid;
+    gap: 10px;
+  }
+
+  .judgement .label {
+    color: var(--muted);
+    font-size: 15px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .judgement .main-claim {
+    font-family: Georgia, "Times New Roman", "SimSun", serif;
+    font-size: 49px;
+    line-height: 1.08;
+  }
+
+  .judgement .main-claim strong {
+    color: var(--orange);
+    font-weight: 700;
+  }
+
+  .learned-pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .learned-card {
+    border: 1px solid var(--line);
+    background: #fff;
+    padding: 18px;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 14px;
+    min-width: 0;
+  }
+
+  .learned-card .tag {
+    width: fit-content;
+  }
+
+  .learned-card .formula {
+    font-size: 28px;
+    padding: 16px 15px;
+    white-space: normal;
+    display: grid;
+    align-content: center;
+  }
+
+  .scale-list {
+    align-self: end;
+    display: grid;
+    gap: 12px;
+  }
+
+  .scale-item {
+    display: grid;
+    grid-template-columns: 70px 1fr;
+    gap: 14px;
+    align-items: baseline;
+    border-top: 1px solid var(--line);
+    padding-top: 13px;
+  }
+
+  .scale-item .idx {
+    color: var(--muted);
+    font-size: 14px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .scale-item .text {
+    font-size: 23px;
+    line-height: 1.34;
+  }
+
+  .question-stack {
+    min-height: 0;
+    display: grid;
+    grid-template-rows: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .question-card {
+    border: 1px solid var(--line);
+    background: rgba(255,255,255,0.78);
+    padding: 22px;
+    display: grid;
+    align-content: center;
+    gap: 12px;
+    min-height: 0;
+  }
+
+  .question-card .label {
+    color: var(--muted);
+    font-size: 14px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .question-card .question {
+    font-family: Georgia, "Times New Roman", "SimSun", serif;
+    font-size: 34px;
+    line-height: 1.12;
+  }
+
+  .question-card .target {
+    color: var(--muted);
+    font-size: 21px;
+    line-height: 1.35;
+  }
+</style>
+</head>
+<body>
+<main class="slide">
+  <header class="head">
+    <div class="no">07</div>
+    <h1>直觉校准</h1>
+    <p class="kicker">初识直觉不是错误结论，而是需要被公式对象和实验条件限定。</p>
+  </header>
+  <section class="main">
+    <article class="calibration-board">
+      <div class="board-head">
+        <h2>把第一层直觉，放回数学对象与实验条件中</h2>
+        <span>直觉 → 公式对象 → 实验观察</span>
+      </div>
+
+      <div class="calibration-flow">
+        <section class="lane">
+          <div class="lane-title">初始直觉</div>
+          <div class="intuition-stack">
+            <div class="intuition-card diffusion">
+              <div class="method">Diffusion</div>
+              <div class="claim">离散时间下的<br>随机反向过程</div>
+              <div class="sub">经典 DDPM 采样在反向均值外保留方差项。</div>
+            </div>
+            <div class="intuition-card flow">
+              <div class="method">Flow Matching</div>
+              <div class="claim">连续时间下的<br>确定性输运</div>
+              <div class="sub">常见 ODE 采样给定初值后由速度场决定轨迹。</div>
+            </div>
+          </div>
+        </section>
+
+        <div class="connector" aria-hidden="true">
+          <svg viewBox="0 0 48 380">
+            <defs>
+              <marker id="arrowA" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="8" markerHeight="8" orient="auto">
+                <path d="M1 1 L11 6 L1 11 Z" fill="#aeb5bf"></path>
+              </marker>
+            </defs>
+            <path d="M6 190 H40" stroke="#aeb5bf" stroke-width="3" fill="none" marker-end="url(#arrowA)"></path>
+          </svg>
+        </div>
+
+        <section class="core">
+          <div class="judgement">
+            <div class="label">校准</div>
+            <div class="main-claim">离散 / 连续<br>随机 / 确定<br><strong>只是入口</strong></div>
+          </div>
+
+          <div class="learned-pair">
+            <div class="learned-card">
+              <div class="tag blue">噪声目标</div>
+              <div class="formula"><span class="tex" data-tex="\epsilon_{\theta}(x_t,t)\approx\epsilon"></span></div>
+            </div>
+            <div class="learned-card">
+              <div class="tag green">速度目标</div>
+              <div class="formula"><span class="tex" data-tex="v_{\theta}(z_t,t)\approx\frac{dz_t}{dt}"></span></div>
+            </div>
+          </div>
+
+          <div class="scale-list">
+            <div class="scale-item">
+              <div class="idx">01</div>
+              <div class="text">学习对象不同：噪声参数化与速度场回归。</div>
+            </div>
+            <div class="scale-item">
+              <div class="idx">02</div>
+              <div class="text">动力学不同：SDE / Markov 反向链与 ODE 输运。</div>
+            </div>
+            <div class="scale-item">
+              <div class="idx">03</div>
+              <div class="text">实现层面都要离散化，步数会影响可见轨迹。</div>
+            </div>
+          </div>
+        </section>
+
+        <div class="connector" aria-hidden="true">
+          <svg viewBox="0 0 48 380">
+            <defs>
+              <marker id="arrowB" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="8" markerHeight="8" orient="auto">
+                <path d="M1 1 L11 6 L1 11 Z" fill="#aeb5bf"></path>
+              </marker>
+            </defs>
+            <path d="M6 190 H40" stroke="#aeb5bf" stroke-width="3" fill="none" marker-end="url(#arrowB)"></path>
+          </svg>
+        </div>
+
+        <section class="lane">
+          <div class="lane-title">观察问题</div>
+          <div class="question-stack">
+            <div class="question-card">
+              <div class="label">轨迹</div>
+              <div class="question">同一点怎么走？</div>
+              <div class="target">观察轨迹是否折返、震荡、平滑或复现。</div>
+            </div>
+            <div class="question-card">
+              <div class="label">速度场</div>
+              <div class="question">局部方向是否连贯？</div>
+              <div class="target">用向量场看模型学到的更新方向。</div>
+            </div>
+            <div class="question-card">
+              <div class="label">NFE</div>
+              <div class="question">有限步下误差怎样变化？</div>
+              <div class="target">比较步数、稳定性与采样质量。</div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </article>
+  </section>
+  <footer class="foot">
+    <span>直觉需要由公式对象和实验条件限定</span>
+    <span>后续观察围绕终态、轨迹、速度场与步数展开</span>
+  </footer>
+</main>
+<script src="../vendor/katex/katex.min.js"></script>
+<script src="../vendor/katex/render-tex.js"></script>
+</body>
+</html>

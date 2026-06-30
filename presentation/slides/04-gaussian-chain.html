@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>04 · 高斯后验</title>
+<link rel="stylesheet" href="../vendor/katex/katex.min.css">
+<link rel="stylesheet" href="../shared.css">
+<style>
+  .gaussian-board {
+    height: 100%;
+    border: 1px solid var(--line-strong);
+    background: #fff;
+    box-shadow: var(--shadow);
+    padding: 32px 34px 28px;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 20px;
+    min-height: 0;
+  }
+
+  .gaussian-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 28px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 16px;
+  }
+
+  .gaussian-head h2 {
+    margin: 0;
+    font-family: Georgia, "Times New Roman", "SimSun", serif;
+    font-size: 44px;
+    line-height: 1.05;
+  }
+
+  .gaussian-head span {
+    color: var(--muted);
+    font-size: 15px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .gaussian-main {
+    display: grid;
+    grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.98fr);
+    gap: 32px;
+    min-height: 0;
+  }
+
+  .derive-column {
+    min-height: 0;
+    display: grid;
+    gap: 0;
+  }
+
+  .forward-lane {
+    align-content: stretch;
+    gap: 0;
+  }
+
+  .posterior-lane {
+    grid-template-rows: auto auto minmax(0, 1fr) auto;
+    align-content: stretch;
+  }
+
+  .derive-column + .derive-column {
+    border-left: 1px solid var(--line);
+    padding-left: 32px;
+  }
+
+  .derive-row {
+    grid-template-columns: 92px minmax(0, 1fr);
+    padding: 22px 0;
+    align-items: center;
+  }
+
+  .forward-lane .derive-row {
+    padding: 17px 0;
+  }
+
+  .derive-formula {
+    font-size: 29px;
+    line-height: 1.32;
+  }
+
+  .derive-formula.large {
+    font-size: 34px;
+  }
+
+  .derive-formula.small {
+    font-size: 25px;
+    line-height: 1.34;
+  }
+
+  .symbol-row {
+    border: 1px solid var(--line);
+    background: #fffdf9;
+    padding: 15px 18px;
+    display: grid;
+    gap: 8px;
+  }
+
+  .symbol-row .derive-formula {
+    font-size: 27px;
+  }
+
+  .posterior-visual {
+    border: 1px solid var(--line);
+    background: #fffdf9;
+    height: 100%;
+    min-height: 286px;
+    display: grid;
+    place-items: center;
+    margin: 18px 0;
+    overflow: hidden;
+  }
+
+  .posterior-lane .derive-index,
+  .forward-lane .derive-index {
+    padding-top: 0;
+  }
+
+</style>
+</head>
+<body>
+<main class="slide">
+  <header class="head">
+    <div class="no">04</div>
+    <h1>高斯后验</h1>
+    <p class="kicker">前向加噪的闭式解，使训练时的局部反向目标可以被解析构造。</p>
+  </header>
+  <section class="main">
+    <article class="gaussian-board">
+      <div class="gaussian-head">
+        <h2>人为设计前向链，再借它写出局部后验</h2>
+        <span>前向闭式解 → 后验目标</span>
+      </div>
+
+      <div class="gaussian-main">
+        <div class="derive-column forward-lane">
+          <div class="symbol-row">
+            <div class="derive-index">噪声日程</div>
+            <div class="derive-formula small">
+              <span class="tex" data-tex="\beta_t:\ \text{noise variance},\quad \alpha_t=1-\beta_t,\quad \bar{\alpha}_t=\prod_{s=1}^{t}\alpha_s"></span>
+            </div>
+          </div>
+
+          <div class="derive-row">
+            <div class="derive-index">单步加噪</div>
+            <div class="derive-content">
+              <div class="derive-formula large">
+                <span class="tex" data-tex="q(x_t|x_{t-1})=N(\sqrt{\alpha_t}x_{t-1},\beta_t I)"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="derive-row">
+            <div class="derive-index">链式展开</div>
+            <div class="derive-content">
+              <div class="derive-formula small">
+                <span class="tex" data-tex="x_t=\sqrt{\alpha_t\alpha_{t-1}\cdots\alpha_1}\,x_0+\text{accumulated Gaussian noise}"></span>
+              </div>
+              <div class="derive-formula large">
+                <span class="tex" data-tex="q(x_t|x_0)=N(\sqrt{\bar{\alpha}_t}x_0,(1-\bar{\alpha}_t)I)"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="derive-row">
+            <div class="derive-index">重参数化</div>
+            <div class="derive-content">
+              <div class="derive-formula large">
+                <span class="tex" data-tex="x_t=\sqrt{\bar{\alpha}_t}x_0+\sqrt{1-\bar{\alpha}_t}\epsilon"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="derive-column posterior-lane">
+          <div class="derive-row">
+            <div class="derive-index">困难项</div>
+            <div class="derive-content">
+              <div class="derive-formula"><span class="tex" data-tex="q(x_{t-1}|x_t)=q(x_t|x_{t-1})q(x_{t-1})/q(x_t)"></span></div>
+            </div>
+          </div>
+
+          <div class="derive-row">
+            <div class="derive-index">给定 x0</div>
+            <div class="derive-content">
+              <div class="derive-formula"><span class="tex" data-tex="q(x_{t-1}|x_t,x_0)=\frac{q(x_t|x_{t-1})q(x_{t-1}|x_0)}{q(x_t|x_0)}"></span></div>
+            </div>
+          </div>
+
+          <div class="posterior-visual">
+            <svg viewBox="0 0 760 230" width="760" height="230" aria-hidden="true">
+              <defs>
+                <marker id="blueArrow" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="8" markerHeight="8" orient="auto">
+                  <path d="M1 1 L11 6 L1 11 Z" fill="#2f66b3"></path>
+                </marker>
+                <marker id="orangeArrow" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="8" markerHeight="8" orient="auto">
+                  <path d="M1 1 L11 6 L1 11 Z" fill="#dc7f2c"></path>
+                </marker>
+              </defs>
+              <g font-family="Georgia, 'Times New Roman', serif" font-size="30" fill="#17202f" text-anchor="middle">
+                <circle cx="120" cy="104" r="38" fill="#fff" stroke="#17202f" stroke-width="2"></circle>
+                <circle cx="380" cy="104" r="38" fill="#e7eef8" stroke="#17202f" stroke-width="2"></circle>
+                <circle cx="640" cy="104" r="38" fill="#c8d8f0" stroke="#17202f" stroke-width="2"></circle>
+                <text x="120" y="115">x<tspan baseline-shift="sub" font-size="19">0</tspan></text>
+                <text x="380" y="115">x<tspan baseline-shift="sub" font-size="19">t−1</tspan></text>
+                <text x="640" y="115">x<tspan baseline-shift="sub" font-size="19">t</tspan></text>
+              </g>
+              <g stroke="#2f66b3" stroke-width="4.2" stroke-linecap="round" fill="none" marker-end="url(#blueArrow)">
+                <path d="M158 95 C232 40, 296 40, 342 86"></path>
+                <path d="M418 95 C492 40, 556 40, 602 86"></path>
+              </g>
+              <g stroke="#dc7f2c" stroke-width="4.2" stroke-linecap="round" fill="none" marker-end="url(#orangeArrow)">
+                <path d="M602 141 C525 194, 461 194, 418 125"></path>
+              </g>
+              <g font-family="Cambria Math, 'Times New Roman', serif" font-size="26" fill="#17202f" text-anchor="middle">
+                <text x="380" y="211">q(x<tspan baseline-shift="sub" font-size="16">t−1</tspan>|x<tspan baseline-shift="sub" font-size="16">t</tspan>, x<tspan baseline-shift="sub" font-size="16">0</tspan>) = N(μ<tspan baseline-shift="sub" font-size="16">t</tspan><tspan baseline-shift="super" font-size="16">*</tspan>, σ<tspan baseline-shift="sub" font-size="16">t</tspan><tspan baseline-shift="super" font-size="16">2</tspan>I)</text>
+              </g>
+            </svg>
+          </div>
+
+          <div class="derive-row">
+            <div class="derive-index">局部目标</div>
+            <div class="derive-content">
+              <div class="derive-formula large"><span class="tex" data-tex="p_{\theta}(x_{t-1}|x_t)\approx N(\mu_t^*,\sigma_t^2 I)"></span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+  </section>
+  <footer class="foot">
+    <span>闭式解使训练样本对可直接构造</span>
+    <span>给定 x0 后，反向后验可化为高斯代数</span>
+  </footer>
+</main>
+<script src="../vendor/katex/katex.min.js"></script>
+<script src="../vendor/katex/render-tex.js"></script>
+</body>
+</html>

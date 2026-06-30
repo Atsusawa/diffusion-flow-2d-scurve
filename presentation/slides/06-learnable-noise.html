@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>06 · 速度目标</title>
+<link rel="stylesheet" href="../vendor/katex/katex.min.css">
+<link rel="stylesheet" href="../shared.css">
+<style>
+  .velocity-board {
+    height: 100%;
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    gap: 34px;
+    min-height: 0;
+  }
+
+  .velocity-left,
+  .velocity-right {
+    border: 1px solid var(--line-strong);
+    background: #fff;
+    box-shadow: var(--shadow);
+    padding: 32px 34px 28px;
+    min-height: 0;
+  }
+
+  .velocity-left {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 20px;
+  }
+
+  .velocity-right {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    gap: 20px;
+  }
+
+  .block-head {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 24px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 16px;
+  }
+
+  .block-head h2 {
+    margin: 0;
+    font-family: Georgia, "Times New Roman", "SimSun", serif;
+    font-size: 43px;
+    line-height: 1.06;
+  }
+
+  .block-head span {
+    color: var(--muted);
+    font-size: 15px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .velocity-chain {
+    display: grid;
+    align-content: space-evenly;
+    gap: 0;
+    min-height: 0;
+  }
+
+  .derive-row {
+    grid-template-columns: 90px minmax(0, 1fr);
+    padding: 24px 0;
+  }
+
+  .derive-row:first-child {
+    padding-top: 0;
+  }
+
+  .derive-formula {
+    font-size: 31px;
+    line-height: 1.35;
+  }
+
+  .derive-formula.large {
+    font-size: 38px;
+    line-height: 1.25;
+  }
+
+  .loss-row {
+    background: var(--soft-green);
+    border: 1px solid #c6decf;
+    padding: 18px 20px;
+    margin-top: 2px;
+  }
+
+  .ode-visual {
+    border: 1px solid var(--line);
+    background: #fffdf9;
+    display: grid;
+    place-items: center;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .right-note {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .note-cell {
+    border: 1px solid var(--line);
+    background: rgba(247,243,236,0.45);
+    padding: 18px 19px;
+  }
+
+  .note-cell .label {
+    color: var(--muted);
+    font-size: 14px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 9px;
+  }
+
+  .note-cell .text {
+    font-size: 22px;
+    line-height: 1.35;
+  }
+
+</style>
+</head>
+<body>
+<main class="slide">
+  <header class="head">
+    <div class="no">06</div>
+    <h1>速度目标</h1>
+    <p class="kicker">Flow Matching 不从噪声后验 KL 出发，而是直接监督一条概率路径上的速度场。</p>
+  </header>
+  <section class="main">
+    <div class="velocity-board">
+      <article class="velocity-left">
+        <div class="block-head">
+          <h2>给定路径，回归速度</h2>
+          <span>Flow Matching 目标</span>
+        </div>
+
+        <div class="velocity-chain">
+          <div class="derive-row">
+            <div class="derive-index">配对</div>
+            <div class="derive-content">
+              <div class="derive-formula"><span class="tex" data-tex="z_0\sim p_0,\quad x_1\sim p_{\mathrm{data}}"></span></div>
+            </div>
+          </div>
+
+          <div class="derive-row">
+            <div class="derive-index">路径</div>
+            <div class="derive-content">
+              <div class="derive-formula large"><span class="tex" data-tex="z_t=(1-t)z_0+tx_1,\quad t\in[0,1]"></span></div>
+            </div>
+          </div>
+
+          <div class="derive-row">
+            <div class="derive-index">速度</div>
+            <div class="derive-content">
+              <div class="derive-formula large"><span class="tex" data-tex="u_t(z_t|z_0,x_1)=\frac{dz_t}{dt}=x_1-z_0"></span></div>
+            </div>
+          </div>
+
+          <div class="derive-row">
+            <div class="derive-index">损失</div>
+            <div class="derive-content loss-row">
+              <div class="derive-formula large"><span class="tex" data-tex="L_{\mathrm{FM}}=\mathbb{E}\|v_{\theta}(z_t,t)-u_t\|^2"></span></div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="velocity-right">
+        <div class="block-head">
+          <h2>生成时解 ODE</h2>
+          <span>采样动力学</span>
+        </div>
+        <div class="ode-visual">
+          <svg viewBox="0 0 760 560" width="760" height="560" aria-hidden="true">
+            <defs>
+              <marker id="greenArrow" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="10" markerHeight="10" orient="auto">
+                <path d="M1 1 L11 6 L1 11 Z" fill="#2e8b5f"></path>
+              </marker>
+            </defs>
+            <rect x="66" y="58" width="628" height="360" fill="#fff" stroke="#d8d1c7" stroke-width="2"></rect>
+            <g opacity="0.75">
+              <circle cx="151" cy="326" r="7" fill="#2f66b3"></circle>
+              <circle cx="186" cy="274" r="7" fill="#2f66b3"></circle>
+              <circle cx="226" cy="350" r="7" fill="#2f66b3"></circle>
+              <circle cx="267" cy="250" r="7" fill="#2f66b3"></circle>
+              <circle cx="301" cy="310" r="7" fill="#2f66b3"></circle>
+              <circle cx="342" cy="226" r="7" fill="#2f66b3"></circle>
+            </g>
+            <g fill="#dc7f2c" opacity="0.9">
+              <circle cx="520" cy="162" r="7"></circle>
+              <circle cx="553" cy="190" r="7"></circle>
+              <circle cx="589" cy="222" r="7"></circle>
+              <circle cx="604" cy="267" r="7"></circle>
+              <circle cx="585" cy="312" r="7"></circle>
+              <circle cx="548" cy="342" r="7"></circle>
+              <circle cx="506" cy="364" r="7"></circle>
+            </g>
+            <g stroke="#2e8b5f" stroke-width="4" stroke-linecap="round" fill="none" marker-end="url(#greenArrow)">
+              <path d="M152 326 C247 282, 370 222, 516 162"></path>
+              <path d="M187 274 C282 254, 411 217, 550 190"></path>
+              <path d="M225 350 C333 329, 453 286, 602 267"></path>
+              <path d="M267 250 C363 260, 471 298, 583 312"></path>
+              <path d="M302 310 C386 330, 452 358, 506 364"></path>
+            </g>
+            <g font-family="Bahnschrift, 'Segoe UI', sans-serif" font-size="21" fill="#667085" text-anchor="middle">
+              <text x="194" y="468">基分布</text>
+              <text x="574" y="468">数据分布</text>
+            </g>
+          </svg>
+        </div>
+        <div class="right-note">
+          <div class="note-cell">
+            <div class="label">训练</div>
+            <div class="text">看见中间点 z<sub>t</sub>，拟合其应有速度。</div>
+          </div>
+          <div class="note-cell">
+            <div class="label">采样</div>
+            <div class="text">有限步 Euler / ODE solver 把速度积分成轨迹。</div>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+  <footer class="foot">
+    <span>Flow Matching 直接学习速度场</span>
+    <span>连续时间形式在实现中仍需有限步数值积分</span>
+  </footer>
+</main>
+<script src="../vendor/katex/katex.min.js"></script>
+<script src="../vendor/katex/render-tex.js"></script>
+</body>
+</html>
