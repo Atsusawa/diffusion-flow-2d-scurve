@@ -52,6 +52,30 @@ python .\scurve_diffusion_flow.py
 
 `outputs/` 属于可再生实验产物，不纳入版本控制。幻灯片中真正使用到的图像和 GIF 已整理到 `presentation/assets/`。
 
+## 实验结果展示
+
+最终分布对比：
+
+![目标分布、Diffusion 生成结果与 Flow Matching 生成结果](presentation/assets/final_distribution_triptych.png)
+
+采样动态过程：
+
+| Diffusion / DDIM | Flow Matching / ODE |
+| --- | --- |
+| ![Diffusion 采样过程](presentation/assets/diffusion_process.gif) | ![Flow Matching 采样过程](presentation/assets/flow_matching_process.gif) |
+
+轨迹与局部动力观察：
+
+![同点样本轨迹](presentation/assets/10_paired_paths.png)
+
+![早期动力与径向趋势](presentation/assets/08_early_dynamics_focus_slide.png)
+
+采样预算对比：
+
+![不同 NFE 下的误差曲线](presentation/assets/11_nfe_comparison_curve_slide.png)
+
+![不同 NFE 下的代表快照](presentation/assets/11_nfe_comparison_snapshots_focus_slide.png)
+
 ## 查看幻灯片
 
 直接打开：
@@ -149,5 +173,3 @@ dx / dt = v_theta(x,t),  x(0) ~ N(0,I)
 - `train_seconds` 与训练 loss：反映训练开销和收敛情况。
 
 本实验只能支持当前二维任务、当前网络容量和当前采样器下的比较；它不构成对两类方法的一般排序。
-
-参考资料：<https://diffusionflow.github.io/>
